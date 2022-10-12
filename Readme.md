@@ -8,3 +8,434 @@ appディレクトリ配下に置いてください。
 docker-compose up -d
 ```
 
+
+
+
+----------------------------------------------------------------
+▼TODOリスト
+----------------------------------------------------------------
+さて、次ですが、
+TODOリストを素のPHPで実装しようと思いますがよろしいですか？
+FWでよく使用されるMVCモデルを意識したファイル構成にしているので、
+今後、フレームワークを使用される際も、理解が深まるかなと思います。
+欲しい機能としては、
+一覧画面
+詳細
+新規登録
+編集
+削除
+ログイン機能
+ユーザー登録画面
+ユーザー編集画面
+ですね。
+一覧画面に、テーブルでTODOリストを表示させ、
+タイトルをクリックすると詳細画面に遷移
+詳細画面で編集ボタンがあり、押下すると、編集画面に遷移
+一覧画面には新規作成ボタンを用意して、押下すると、新規作成画面に遷移
+一覧画面の各TODOリストの左端には削除ボタンを用意し、
+クリックすると削除できる
+というような画面を想定しています。
+イメージ湧きますかね？
+もし問題なければ、まずはテーブル設計から始めていきたいと思います
+todosテーブル
+id
+user_id
+title
+...
+のように必要なテーブル構成を書いてみてください。
+せっかくですので、ER図の作成をしてみましょうか。ブラウザで簡単にER図が書ける
+https://ondras.zarovi.cz/sql/demo/?keyword=defaulthttp://www.kaasan.info/archives/3733
+ER図の作り方【簡易版】
+https://qiita.com/ykwp21/items/fac0e257317cea32d2d1
+ER図を一度でも書いた経験があるのと、ないのとでは、全く違ってくると思いますので、
+こちら、簡単に書いてみてください＾＾
+ER図を作成できましたら、XMLでエクスポートできると思いますので
+そちらをこちらに貼ってみてください。テーブル定義のレビューから始めます。
+合わせて、docker でPHPの開発環境のご用意もお願いします。
+docker をインストールしていない場合は、インストールしていただき、
+docker-compose の設定ファイルは私が用意したので
+よろしかったら使ってみてください＾＾
+youtube で簡単に動画作成しているので、よろしければ参考にしてください
+https://www.youtube.com/watch?v=oJnOMjLders&t=71s
+
+
+
+
+
+
+----------------------------------------------------------------
+▼テーブル設計
+----------------------------------------------------------------
+考えてみました！ご確認お願いします！
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- SQL XML created by WWW SQL Designer, https://github.com/ondras/wwwsqldesigner/ -->
+<!-- Active URL: https://ondras.zarovi.cz/sql/demo/?keyword=defaulthttp://www.kaasan.info/archives/3733 -->
+<sql>
+<datatypes db="mysql">
+	<group label="Numeric" color="rgb(238,238,170)">
+		<type label="Integer" length="0" sql="INTEGER" quote=""/>
+	 	<type label="TINYINT" length="0" sql="TINYINT" quote=""/>
+	 	<type label="SMALLINT" length="0" sql="SMALLINT" quote=""/>
+	 	<type label="MEDIUMINT" length="0" sql="MEDIUMINT" quote=""/>
+	 	<type label="INT" length="0" sql="INT" quote=""/>
+		<type label="BIGINT" length="0" sql="BIGINT" quote=""/>
+		<type label="Decimal" length="1" sql="DECIMAL" re="DEC" quote=""/>
+		<type label="Single precision" length="0" sql="FLOAT" quote=""/>
+		<type label="Double precision" length="0" sql="DOUBLE" re="DOUBLE" quote=""/>
+	</group>
+
+	<group label="Character" color="rgb(255,200,200)">
+		<type label="Char" length="1" sql="CHAR" quote="'"/>
+		<type label="Varchar" length="1" sql="VARCHAR" quote="'"/>
+		<type label="Text" length="0" sql="MEDIUMTEXT" re="TEXT" quote="'"/>
+		<type label="Binary" length="1" sql="BINARY" quote="'"/>
+		<type label="Varbinary" length="1" sql="VARBINARY" quote="'"/>
+		<type label="BLOB" length="0" sql="BLOB" re="BLOB" quote="'"/>
+	</group>
+
+	<group label="Date &amp; Time" color="rgb(200,255,200)">
+		<type label="Date" length="0" sql="DATE" quote="'"/>
+		<type label="Time" length="0" sql="TIME" quote="'"/>
+		<type label="Datetime" length="0" sql="DATETIME" quote="'"/>
+		<type label="Year" length="0" sql="YEAR" quote=""/>
+		<type label="Timestamp" length="0" sql="TIMESTAMP" quote="'"/>
+	</group>
+	
+	<group label="Miscellaneous" color="rgb(200,200,255)">
+		<type label="ENUM" length="1" sql="ENUM" quote=""/>
+		<type label="SET" length="1" sql="SET" quote=""/>
+		<type label="Bit" length="0" sql="bit" quote=""/>
+	</group>
+</datatypes><table x="10" y="10" name="user">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="user" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="password" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="222" y="10" name="todo">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="id_user" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="user" row="id" />
+</row>
+<row name="title" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="details" null="1" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+</sql>
+
+
+マイケル
+  22:30
+ER図作成していただけましたね！
+まずテーブル名ですが、複数形で宣言してみましょう
+userではなく、usersといたしましょう。
+LaravelのようなFWを使用する際に、
+自動でモデルクラスの複数形をテーブル名と認識してくれるような機能があるので
+テーブル名を複数形で宣言することを習慣化しておくといいと思います。
+id_user カラムですが、user_idというカラム名の方が一般的と思います
+このカラムとusers テーブルのidカラムがひもつくことで、どのユーザーのTODOなのか判別できます
+それぞれのテーブルに
+created_at, updated_at, deleted_at カラムを追加してみましょう
+型はdatetime型にします
+datetime型のカラム名を~_at で統一することで、
+カラム名を見ただけでカラムの型を推測することができるようになります。
+レコードを削除する時にdeleted_atに削除した日付を保存してあげることで、
+もしdeleted_atに値があれば、そのレコードは削除されたものとしてみなすことができます
+これを論理削除といいます
+一方、レコードごと削除することを物理削除といいます
+物理削除だと、もし運用中に何か問題があった場合、レコードを削除してしまっているので
+調査が困難になります。
+なので、なるべく論理削除する設計にすることが多いです。
+userテーブルのuser カラムですが、用途がカラム名から不明なので
+ここはユーザー名を意味するnameというカラムにしましょう
+型はvarcharでOKです
+varcharは代入された文字列分だけメモリを確保します。
+文字数はnameに使用する文字数分だけリミットをつけましょう
+TODOのステータスを管理するためのstatusというカラムを追加しましょう
+これはint(１桁）で管理してみましょうか
+0: 未完了 1: 完了
+のように管理できそうですかね
+全てのカラムがNULL許可になっていますが、もう一度精査してみてください
+このあたり修正してみてください＾＾
+
+
+陽- よう
+  09:31
+ご丁寧にありがとうございます。
+修正しました。ご確認お願いいたします。
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- SQL XML created by WWW SQL Designer, https://github.com/ondras/wwwsqldesigner/ -->
+<!-- Active URL: https://ondras.zarovi.cz/sql/demo/?keyword=defaulthttp://www.kaasan.info/archives/3733 -->
+<sql>
+<datatypes db="mysql">
+	<group label="Numeric" color="rgb(238,238,170)">
+		<type label="Integer" length="0" sql="INTEGER" quote=""/>
+	 	<type label="TINYINT" length="0" sql="TINYINT" quote=""/>
+	 	<type label="SMALLINT" length="0" sql="SMALLINT" quote=""/>
+	 	<type label="MEDIUMINT" length="0" sql="MEDIUMINT" quote=""/>
+	 	<type label="INT" length="0" sql="INT" quote=""/>
+		<type label="BIGINT" length="0" sql="BIGINT" quote=""/>
+		<type label="Decimal" length="1" sql="DECIMAL" re="DEC" quote=""/>
+		<type label="Single precision" length="0" sql="FLOAT" quote=""/>
+		<type label="Double precision" length="0" sql="DOUBLE" re="DOUBLE" quote=""/>
+	</group>
+
+	<group label="Character" color="rgb(255,200,200)">
+		<type label="Char" length="1" sql="CHAR" quote="'"/>
+		<type label="Varchar" length="1" sql="VARCHAR" quote="'"/>
+		<type label="Text" length="0" sql="MEDIUMTEXT" re="TEXT" quote="'"/>
+		<type label="Binary" length="1" sql="BINARY" quote="'"/>
+		<type label="Varbinary" length="1" sql="VARBINARY" quote="'"/>
+		<type label="BLOB" length="0" sql="BLOB" re="BLOB" quote="'"/>
+	</group>
+
+	<group label="Date &amp; Time" color="rgb(200,255,200)">
+		<type label="Date" length="0" sql="DATE" quote="'"/>
+		<type label="Time" length="0" sql="TIME" quote="'"/>
+		<type label="Datetime" length="0" sql="DATETIME" quote="'"/>
+		<type label="Year" length="0" sql="YEAR" quote=""/>
+		<type label="Timestamp" length="0" sql="TIMESTAMP" quote="'"/>
+	</group>
+	
+	<group label="Miscellaneous" color="rgb(200,200,255)">
+		<type label="ENUM" length="1" sql="ENUM" quote=""/>
+		<type label="SET" length="1" sql="SET" quote=""/>
+		<type label="Bit" length="0" sql="bit" quote=""/>
+	</group>
+</datatypes><table x="10" y="10" name="users">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="name" null="0" autoincrement="0">
+<datatype>VARCHAR(100)</datatype>
+<default>'NULL'</default></row>
+<row name="password" null="0" autoincrement="0">
+<datatype>VARCHAR(100)</datatype>
+<default>'NULL'</default></row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<row name="updated_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<row name="deleted_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="222" y="10" name="todos">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="user_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="users" row="id" />
+</row>
+<row name="title" null="0" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>'NULL'</default></row>
+<row name="details" null="1" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+<default>NULL</default></row>
+<row name="status" null="0" autoincrement="0">
+<datatype>INT</datatype>
+<default>NULL</default></row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<row name="updated_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<row name="deleted_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>'NULL'</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+</sql>
+
+
+
+
+
+
+----------------------------------------------------------------
+▼テーブル作成
+----------------------------------------------------------------
+ER図修正していただけましたね！
+OKです！問題ありません
+さて、これでテーブル定義は問題ないと思うので
+次は実際にDBにテーブルを作成してみましょう
+dockerで環境を構築していただき、
+MySQL上にDBを作成し、テーブルを作成してみましょう
+youtube で簡単に動画作成しているので、よろしければ参考にしてください
+https://www.youtube.com/watch?v=oJnOMjLders&t=71s
+ご自身が作成したテーブル定義通りにcreate tableのクエリを作成し、
+そのクエリを実行して、テーブルを作成してみてください。
+実行したクエリも確認するので、
+テーブルが作成できましたら、実行したクエリもこちらに貼ってみてください
+ちょっと難しいかもですが、もしハマりそうならお気軽にご質問ください＾＾
+
+
+ありがとうございます。
+docker環境構築について質問させてください。
+作り方としては、docker内に
+・PHP
+・MySQL
+のサーバーを立てて、docker内で、
+MySQLのテーブルを作成するという認識でよろしいでしょうか？
+
+
+マイケル
+  13:12
+docker-compose.yml を用意したので、
+https://github.com/ProWebEngineer/docker-lemp
+このリポジトリをForkしていただき、
+ローカルPCにdockerデスクトップをインストールしていただくと、docker-composeが一緒にインストールされるので
+フォークしたリポジトリをgit clone して
+docker-compose.yml のDB設定を修正し
+docker-compose up -d 
+でコンテナを起動できると思います
+これだけで、PHPの開発環境は用意できるので
+コンテナを起動した状態で
+docker exec コマンドでDBコンテナに入って
+mysqlコマンドでMySqlにログインできることをまず確認してみてください！ （編集済み） 
+DockerDocker
+Home - Docker
+Learn how Atomist will help Docker meet the challenge of securing secure software supply chains for development teams.
+Written by
+James Ratliff
+Time to read
+23 minutes
+5月11日
+https://www.docker.com/
+
+ProWebEngineer/docker-lemp
+Stars
+5
+Language
+Dockerfile
+投稿したメンバー: GitHub
+
+
+陽- よう
+  09:49
+ありがとうございます。ログインできました！
+DBテーブルを作成してみます！
+:+1:
+1
+
+
+
+
+
+----------------------------------------------------------------
+▼質問
+作ってみたのですが、アドバイスお願いしたいです！
+CREATE TABLE users (
+  id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  password VARCHAR(100) NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  deleted_at DATETIME NOT NULL,
+  PRIMARY KEY (id)
+);
+
+
+CREATE TABLE todos (
+  id INT NOT NULL,
+  user_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  details TEXT,
+  status INT NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  deleted_at DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  ON UPDATE CASCADE
+  ON DELETE SET NULL
+);
+上記で実行すると、todosの方を作ろうとしたときに、
+ERROR 1215 (HY000): Cannot add foreign key constraint
+というエラーが発生します。
+こちらを試してみたのですが、ダメでした。
+https://isgs-lab.com/424/
+
+
+
+
+▼回答
+すみません、遅くなりました。
+クエリのシンタックスは問題なさそうですね！
+試しに自分のローカルでも実行して、エラー内容を確認してみました。
+https://taupe.site/entry/cannot-add-foreign-key-constraint/
+この記事を参考に
+root ユーザーでmysqlにログインして
+SHOW ENGINE INNODB STATUS\G
+を入力すると、直近の外部キーのエラーが確認できました。
+------------------------
+LATEST FOREIGN KEY ERROR
+------------------------
+2022-10-09 12:42:08 0x7f149c4e4700 Error in foreign key constraint of table common/todos:
+FOREIGN KEY (user_id) REFERENCES users(id)   ON UPDATE CASCADE   ON DELETE SET NULL ):
+You have defined a SET NULL condition though some of the
+columns are defined as NOT NULL.
+そうすると、
+NOT NULLに設定しているカラムに対して、親レコードを削除した時にNULLをセットしようとしていて
+エラーが発生しているようです。
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  ON UPDATE CASCADE
+  ON DELETE SET NULL
+);
+ここでクエリを見返してみると
+ ON DELETE SET NULL
+ここで削除した時にNULLをセットしようとしていてエラーがでてそうです。
+https://www.guri2o1667.work/entry/2020/10/27/%E3%80%90MySQL%E3%80%91%E5%A4%96%E9%83%A8%E3%82%AD%E3%83%BC%E5%88%B6%E7%B4%84%EF%BC%88ForeignKey%E5%88%B6%E7%B4%84%EF%BC%89%E3%81%AEon_delete%E8%A8%AD%E5%AE%9A%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6
+ここは親レコードが削除された時は子レコードも削除するような挙動がよさそうですかね
+参考にクエリを修正してみてください＾＾
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+▼ダミーデータインサート【課題】
+----------------------------------------------------------------
+テーブルが作成できましたら、
+次はダミーデータをインサートしてみましょう
+todos, usersテーブルにテストデータをインサートしてみてください
+また、今回からgithubでプロジェクトを管理していきましょう
+githubにリポジトリを作成していただき、pushしてみてください
+また作成したクエリはSQLファイルを作成し、git管理しておきましょう
+data/migratesというディレクトリを作成して、この配下にmigrate.sqlというファイルを作成
+実行したcreate table のクエリを記載しておきましょう
+また、data/seedsというディレクトリを作成して、この配下にseed.sql というファイルを作成
+このファイルに、ダミーデータとして実行するinsert文を記載してみましょう
+ここまでできたら、
+まずはPHPでダミーデータを取得して、ブラウザに表示するところまでやってみたいです！
+トライしてみてください＾＾
