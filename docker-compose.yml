@@ -19,7 +19,7 @@ services:
     image: mysql:5.7
     platform: linux/amd64
     environment:
-      MYSQL_DATABASE: db_todo
+      MYSQL_DATABASE: todo
       MYSQL_USER: yohei
       MYSQL_PASSWORD: yj558055
       MYSQL_ROOT_PASSWORD: root
