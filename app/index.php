@@ -8,7 +8,7 @@
 </head>
 <body>
   <?php
-  $dsn = 'mysql:dbname=todo;host=127.0.0.1;port=3306;charset=utf8mb4;';
+  $dsn = 'mysql:dbname=todo;host=127.0.0.1;port=3306;charset=utf8mb4';
   $username = 'yohei';
   $password = 'yj558055';
   $driver_options = [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ];
