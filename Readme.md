@@ -439,3 +439,35 @@ data/migratesというディレクトリを作成して、この配下にmigrate
 ここまでできたら、
 まずはPHPでダミーデータを取得して、ブラウザに表示するところまでやってみたいです！
 トライしてみてください＾＾
+
+
+お疲れ様です。アドバイスお願いします。
+下記のように作ったのですが、ブラウン表示の際に下記エラーが発生します。
+Fatal error: Uncaught PDOException: SQLSTATE[HY000] [2002] No such file or directory in /var/www/html/app/index.php:16 Stack trace: #0 /var/www/html/app/index.php(16): PDO->__construct('mysql:dbname=to...', 'root', 'root', Array) #1 {main} thrown in /var/www/html/app/index.php on line 16
+どのように対応したらよろしいでしょうか？
+https://github.com/shenbaoblog/todo_php/blob/main/app/index.php
+
+index.php
+<!DOCTYPE html>
+html lang="en"
+head
+  meta charset="UTF-8"
+  meta http-equiv="X-UA-Compatible" content="IE=edge"
+もっと表示する
+<https://github.com/shenbaoblog/todo_php|shenbaoblog/todo_php>shenbaoblog/todo_php | 投稿したメンバー: GitHub
+New
+
+
+マイケル
+  18:57
+git cloneして動作確認してみますと、
+エラーメッセージの内容が違うようでした。
+Fatal error: Uncaught PDOException: SQLSTATE[HY000] [2002] Connection refused in /var/www/html/app/index.php:16 Stack trace: #0 /var/www/html/app/index.php(16): PDO->__construct('mysql:dbname=to...', 'yohei', 'yj558055', Array) #1 {main} thrown in /var/www/html/app/index.php on line 16
+DBの接続に失敗してそうです。
+$dsn = 'mysql:dbname=todo;host=127.0.0.1;port=3306;charset=utf8mb4';
+mysqlのhostに設定されている値を修正する必要がありそうです。
+ここに設定する値はmysqlのhostを設定する必要があるのですが、
+dockerの場合は、docker-compose.ymlに設定されているサービス名を記載してあげればOKです！
+今回はmysqlですかね
+$dsn = 'mysql:dbname=todo;host=mysql;port=3306;charset=utf8mb4';
+こちらで試してみてください＾＾
