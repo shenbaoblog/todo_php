@@ -20,6 +20,28 @@
     die();
   }
 
+  $sql = 'SELECT * FROM users';
+  if($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
+    echo "id,name,password,created_at,updated_at,deleted_at<br />";
+    foreach ($users as $user) {
+      echo "{$user['id']},{$user['name']},{$user['password']},{$user['created_at']},{$user['updated_at']},{$user['updated_at']},{$user['deleted_at']}<br />";
+    }
+  }
+  
+  echo '<br />';
+  
+  $sql = 'SELECT * FROM todos';
+  if($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $todos = $prepare->fetchAll(PDO::FETCH_ASSOC);
+    echo "id,user_id,title,details,status,created_at,updated_at,deleted_at<br />";
+    foreach ($todos as $todo) {
+      echo "{$todo['id']},{$todo['user_id']},{$todo['title']},{$todo['details']},{$todo['status']},{$todo['created_at']},{$todo['updated_at']},{$todo['updated_at']},{$todo['deleted_at']}<br />";
+    }
+  }
+
   ?>
 </body>
 </html>
