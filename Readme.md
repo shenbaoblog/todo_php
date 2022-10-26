@@ -471,3 +471,56 @@ dockerの場合は、docker-compose.ymlに設定されているサービス名�
 今回はmysqlですかね
 $dsn = 'mysql:dbname=todo;host=mysql;port=3306;charset=utf8mb4';
 こちらで試してみてください＾＾
+
+
+ありがとうございます。
+ブラウザにデータ表示させるまではできました。
+ご確認ください。
+https://gyazo.com/9264ed198653ad348d2e02b335479dc1
+
+GyazoGyazo (90 kB)
+https://gyazo.com/9264ed198653ad348d2e02b335479dc1
+
+
+
+陽- よう
+  09:54
+その上で、いくつか質問させてください。
+【質問1】
+今回、docker-compose.ymlファイルにて、
+MYSQL_DATABASE: todo
+としています。こちらなのですが、途中で、
+db_todo に変更するために、
+MYSQL_DATABASE: db_todo
+ として、docker-lempを削除して、もう一度
+docker-compose build
+docker-compose up -d
+をしたのですが、
+db_todoは、作成されずtodo のままでした。
+一度、docker-compose buildをしてしまった場合、db_todoをdocker-compose経由で作成することはできないのでしょうか？
+【質問2】
+現在、DB内に日本語情報を入力すると、消えてしまいます。
+文字コードをutf8に変更する設定を行ったのですが、それでもだめなようです。
+どのようにしたら、日本語を入力できるでしょうか？ （編集済み） 
+New
+
+
+マイケル
+  14:01
+【質問1】
+docker-compose でDBのデータに永続性を持たせているので
+再度、コンテナを作ってもDBが変更されないのですね
+ボリュームの設定はdocker-compose.yml の
+volumes:
+  mysql-data:
+ここでやってます
+この記事が参考になると思いますが
+https://qiita.com/Ikumi/items/b319a12d7e2c9f7b904d
+docker volume list
+と入力すると、
+現在ローカルPCに作られているボリューム一覧が表示されると思います
+この中の任意のボリュームを削除してあげて、
+再度、コンテナを起動するとDBが初期化されると思います
+docker volume rm todo_php_mysql-data
+こちら試してみてください＾＾
+MySQLの日本語化は、また別途ご返信します！
