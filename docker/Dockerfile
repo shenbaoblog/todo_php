@@ -3,7 +3,7 @@ RUN touch test
 RUN echo 'hello world' > test
 
 #使うDockerイメージ  
-FROM mysql
+FROM mysql:5.7
 
 #日本語設定  
 RUN apt-get update && apt-get install -y locales  
