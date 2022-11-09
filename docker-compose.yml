@@ -19,7 +19,7 @@ services:
     # image: ./docker/mysql
     build: ./docker/mysql
     # platform: linux/amd64
-    # platform: linux/x86_64
+    platform: linux/x86_64
     environment:
       MYSQL_DATABASE: db_todo
       MYSQL_USER: yohei

@@ -524,3 +524,30 @@ docker volume list
 docker volume rm todo_php_mysql-data
 こちら試してみてください＾＾
 MySQLの日本語化は、また別途ご返信します！
+
+マイケル
+  13:59
+git pull してコンテナをビルドし直してみますと、
+コンテナがビルドできなくなっていたので
+docker/mysql/Dockerfile に問題ありそうです
+FROM ubuntu:latest
+RUN touch test
+RUN echo 'hello world' > test
+
+#使うDockerイメージ  
+FROM mysql:5.7
+FROMはベースとなるイメージなので、一つを指定することが一般的と思います
+mysql イメージのOSはdebian のようなので、ubuntuのOSを最初に指定しており、不具合起きてそうです
+
+FROM mysql:5.7-debian
+
+RUN apt-get update \
+    && apt-get install -y locales \
+    && sed -i -e 's/# \(ja_JP.UTF-8\)/\1/' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=ja_JP.UTF-8 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+ENV LC_ALL ja_JP.UTF-8
+この内容で更新してみると、どうでしょうか？
+docker-compose は問題内容に見えます
