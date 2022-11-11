@@ -5,7 +5,25 @@ PHP + Nginx + MySQL
 appディレクトリ配下に置いてください。
 
 ```
+# Dockerのコンテナの起動
 docker-compose up -d
+docker-compose up -d --build
+
+# コンテナIDの確認
+docker ps
+
+# mysqlコマンドでMySqlにログイン[方法1]
+docker exec -it [コンテナID] mysql -u [ユーザー] -p
+# mysqlコマンドでMySqlにログイン[方法2]
+docker exec -it [コンテナID] /bin/bash
+mysql -u [ユーザー] -p
+
+
+# DBの選択
+show databases;
+use [DB名];
+
+# MySQLにデータ挿入
 ```
 
 
