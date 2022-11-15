@@ -569,3 +569,67 @@ RUN apt-get update \
 ENV LC_ALL ja_JP.UTF-8
 この内容で更新してみると、どうでしょうか？
 docker-compose は問題内容に見えます
+
+
+
+
+
+
+
+----------------------------------------------------------------
+▼リファクタ
+----------------------------------------------------------------
+
+日本語入力できたのですね！よかったです＾＾
+utf8mb4 に変換したいのは、絵文字を保存したいからなのかなと思いますが、
+character_set_database がutf8mb4なので問題ないかなと思うのと、
+実務では、絵文字をそのままDBに保存することは少なく、
+保存時にマークダウンなどに変換して、文字列として保存することもあります。
+参考)
+https://feeld-uni.com/?p=2154
+そうすると、絵文字は![img]~のような文字列でDBに保存されるようなイメージです。
+今回は、取り急ぎ、今のDB設定のままいきましょうか。
+さて、リファクタリングしていきます。
+app/index.php
+ですが、views/todoというディレクトリを作成して、
+index.php はこの配下に移動させましょうか
+<body>
+  <?php
+現在、phpタグはbodyタグの中に書かれていますが
+PHP の処理は、ファイルの冒頭に書くようにしましょうか
+<?php 
+//PHP処理
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+htmlタグのlanがen になっているのでja にしておきましょう。
+$dsn = 'mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8';
+$username = 'yohei';
+$password = 'yj558055';
+$driver_options = [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ];
+このあたりのDB接続情報は、configに書くようにしてみましょうか。
+接続情報を書いてみましょう
+app/config/db_connect.php のようなファイルを用意して
+この中に接続情報を書いてみましょう
+配列を返すようにすればOKです
+イメージとしては
+return array(
+    "dsn" => "",
+    "username" => "",
+    "username" => ""
+);
+このような感じですかね
+TODOリストは
+foreach ($todos as $todo) {
+    echo "{$todo['id']},{$todo['user_id']},{$todo['title']},{$todo['details']},{$todo['status']},{$todo['created_at']},{$todo['updated_at']},{$todo['updated_at']},{$todo['deleted_at']}<br />";
+}
+echoで出力するのではなく、
+liタグで表示するようにしてみましょうか
+<ul>
+    <?php foreach(//条件):?>
+        <li>//TODOのタイトル</li>
+    <?php endforeach;?>
+</ul>
+このような感じになるかなと思います。
+このあたり、修正してみてください＾＾
