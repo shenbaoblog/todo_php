@@ -633,3 +633,114 @@ liタグで表示するようにしてみましょうか
 </ul>
 このような感じになるかなと思います。
 このあたり、修正してみてください＾＾
+
+
+マイケル
+  22:09
+いい感じですね！
+configのところですが、
+function dbConnectInfo ($dns, $username, $password, $driver_options) {
+
+  return array(
+      "dsn" => "mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8",
+      "username" => "yohei",
+      "password" => "yj558055",
+      "driver_options" => [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ],
+  );
+}
+関数を定義せずとも
+return array(
+      "dsn" => "mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8",
+      "username" => "yohei",
+      "password" => "yj558055",
+      "driver_options" => [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ],
+  );
+  
+これだけdb_connect.php に記載すれば
+$config = require_once('config/db_connect.php');
+のように書けば、配列を取得できるかなと思います。
+また、
+$dsn = 'mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8';
+  $username = 'yohei';
+  $password = 'yj558055';
+  $driver_options = [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ];
+  
+これらの変数は、configから値を取得して処理を書いてみてください。
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+▼コントローラー作成
+----------------------------------------------------------------
+続いて、コントローラーを作成してみましょうか
+app/controllersというディレクトリを作成して、
+この配下にTodoController.phpを作成
+このファイルにTodoControllerを宣言
+このクラスにindexメソッドを宣言して、
+この中に
+try {
+    $pdo = new PDO($dsn, $username, $password, $driver_options);
+  } catch (PDOException $e){
+    print('Connection failed:'.$e->getMessage());
+    die();
+  }
+
+
+  $sql = 'SELECT * FROM users';
+  if($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
+  }
+  
+  $sql = 'SELECT * FROM todos';
+  if($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $todos = $prepare->fetchAll(PDO::FETCH_ASSOC);
+  }
+このあたりの処理を移行させましょう
+view 側はコントローラーのindexメソッドを呼ぶことで
+データを取得するようにしてみたいです
+このあたり修正してみてください＾＾
+
+
+
+----------------------------------------------------------------
+▼return　について
+----------------------------------------------------------------
+陽- よう
+  09:53
+ありがとうございます。1点質問させてください。
+return array(
+      "dsn" => "mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8",
+      "username" => "yohei",
+      "password" => "yj558055",
+      "driver_options" => [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ],
+  );
+こちらは、どうしてreturnが必要なのでしょうか？
+$config = require_once('config/db_connect.php');
+すると、下記記述になる認識なのですが、変数にreturnすることは、できないと思うのですが、実際に記述してみると、問題なく動いている理由がわかりません。
+$config = return array(
+  "dsn" => "mysql:dbname=db_todo;host=mysql;port=3306;charset=utf8",
+  "username" => "yohei",
+  "password" => "yj558055",
+  "driver_options" => [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ],
+);
+New
+
+
+マイケル
+  09:30
+これはPHP の仕様なので、公式を見てみましょう
+https://www.php.net/manual/ja/function.return.php
+関数内で呼び出されると、return文は即座に その関数の実行を停止し、引数を関数の値として返します。
+これは今までやってきた関数内の処理ですね
+グローバルスコープで呼び出されると、現在実行中のスクリプトが終了 します。もしそのスクリプトが include もしくは require されたものである場合、制御は呼び出し元 のファイルに戻ります。また、そのスクリプトが include されたものである場合は、returnに与えられた引数 の値は include の戻り値となります。
+と記載ありますので、requireなどで読み込まれた場合は、
+returnの引数の値を読み込み元に返す仕様になってます
+この書き方は、FWでもよく使用されている書き方なので、
+ぜひ抑えてみてください＾＾
