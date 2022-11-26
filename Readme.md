@@ -744,3 +744,126 @@ https://www.php.net/manual/ja/function.return.php
 returnの引数の値を読み込み元に返す仕様になってます
 この書き方は、FWでもよく使用されている書き方なので、
 ぜひ抑えてみてください＾＾
+
+
+
+----------------------------------------------------------------
+▼docker　document root について
+----------------------------------------------------------------
+陽- よう
+  09:32
+また、もう1点質問させてください。
+今回、/appディレクトリが、ドキュメントルートになっていますが、これは、どこdocker-compose.ymlの
+    depends_on: # 追加
+      - app
+の部分の記述で、/appと/var/www/html/appを紐付けているのでしょうか？
+ドキュメントルート自体は、/docker/web/default.conf内の
+server {
+    listen 80;
+
+    root  /var/www/html/app;
+で設定しているのだと思っています。
+ご回答よろしくお願いいたします。
+New
+
+
+マイケル
+  23:18
+すみません、遅くなりました。
+ドキュメントルートは、
+ご察しの通り、/docker/web/default.conf
+で設定しています
+このコンフィグは、nginxの設定ファイルになります。
+root  /var/www/html/app;
+index index.php index.html index.htm;
+このように記載することで、ドキュメントルートは/var/www/html/app配下を参照
+URLにファイル名を指定しない場合は、自動で
+index index.php index.html index.htm;
+これらのファイルを参照しにいくような設定になっています。
+なので、/var/www/html/app/index.php のようなファイルを作成すれば
+localhost:8000
+にアクセスすれば、ファイル名をURLに指定せずとも表示されると思います。
+docker-compose.yml のdepends_onに関しては
+自分もよくわかっていないのですが、コンテナ同志の依存を管理するものではなく、
+サービスの起動順番を制御するもののようです。
+https://qiita.com/haruyan_hopemucci/items/344f1e2fb95ed452bdb2
+dockerのネットワーク周りは結構難しくて、自分も勉強中ですが、
+普段使いする上ではここまで詳しくしる必要はないのかなと思うので
+余裕がありましたら、調べてみてください＾＾
+
+
+
+
+----------------------------------------------------------------
+▼controller修正
+----------------------------------------------------------------
+さて、コントローラーを作成していただきましたね！
+https://github.com/shenbaoblog/todo_php/blob/main/app/controllers/TodoController.php
+ここは関数ではなく、TodoControllerクラスを宣言して、
+このクラスにindexメソッドを宣言してみましょう
+try {
+    $pdo = new PDO($dsn, $username, $password, $driver_options);
+} catch (PDOException $e) {
+    print('Connection failed:' . $e->getMessage());
+    die();
+}
+try-catch で囲むのは素晴らしいと思うのですが、
+せっかく例外処理を書くのであれば、SQLの実行まで例外処理で囲みたいです。
+try {
+    $pdo = new PDO($dsn, $username, $password, $driver_options);
+  
+    $sql = 'SELECT * FROM users';
+    if ($prepare = $pdo->prepare($sql)) {
+        $prepare->execute();
+        $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    $sql = 'SELECT * FROM todos';
+    if ($prepare = $pdo->prepare($sql)) {
+        $prepare->execute();
+        $todos = $prepare->fetchAll(PDO::FETCH_ASSOC);
+    }
+  } catch (PDOException $e) {
+    print('Connection failed:' . $e->getMessage());
+    die();
+  }
+インデックスですが、半角スペース２のようなので、４つにしてみましょう。
+function index($dsn, $username, $password, $driver_options) {
+引数でDB接続情報を渡すのではなく、
+このコントローラー内でDB接続情報を取得するようにしてみましょうか。
+TODO一覧ページでユーザーリストは取得する必要ないと思うので不要です。
+$sql = 'SELECT * FROM todos';
+これですと、全ユーザーの全てのTODOリストを取得してしまうので、
+ログインユーザーのTODoリストのみ取得するような処理にしてみたいです。
+今はuser_id = 1　のような決めうちでいいので
+where句で対象ユーザーのTODOリストのみ返すような処理にしてみてください。
+このあたり、修正してみてください＾＾
+TodoController.php
+<?php
+
+
+function index($dsn, $username, $password, $driver_options) {
+  try {
+    $pdo = new PDO($dsn, $username, $password, $driver_options);
+  } catch (PDOException $e) {
+    print('Connection failed:' . $e->getMessage());
+    die();
+  }
+
+
+  $sql = 'SELECT * FROM users';
+  if ($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  $sql = 'SELECT * FROM todos';
+  if ($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $todos = $prepare->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  return [
+    'users' => $users,
+    'todos' => $todos;
+}
