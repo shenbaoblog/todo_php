@@ -1,14 +1,7 @@
 <?php
 
 include('/var/www/html/app/controllers/TodoController.php');
-$config = require_once('/var/www/html/app/config/db_connect.php');
-
-$dsn = $config['dsn'];
-$username = $config['username'];
-$password = $config['password'];
-$driver_options = $config['driver_options'];
-
-$sql = TodoController::index($dsn, $username, $password, $driver_options);
+$sql = TodoController::index();
 
 ?>
 
