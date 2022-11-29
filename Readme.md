@@ -867,3 +867,57 @@ function index($dsn, $username, $password, $driver_options) {
     'users' => $users,
     'todos' => $todos;
 }
+アドバイスありがとうございます。修正いたしました。
+引数でDB接続情報を渡すのではなく、
+このコントローラー内でDB接続情報を取得するようにしてみましょうか。
+DB接続の部分、アドバイスいただけますでしょうか？
+https://github.com/shenbaoblog/todo_php （編集済み） 
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+a month ago
+投稿したメンバー: GitHub
+
+
+陽- よう
+  22:53
+エラー分になります。
+Fatal error: Uncaught Error: Access to undeclared static property: TodoController::$config in /var/www/html/app/controllers/TodoController.php:25 Stack trace: #0 /var/www/html/app/index.php(4): TodoController::index() #1 {main} thrown in /var/www/html/app/controllers/TodoController.php on line 25
+
+
+マイケル
+  13:54
+エラーが発生しているソースがおそらくpushされていないように思いますが、
+ひとまず、indexメソッドの中でrequire_once してみましょうか
+イメージとしては、
+public function index($dsn, $username, $password, $driver_options)
+{
+    $config = require_once(//コンフィグファイル);
+    try {
+        $pdo = new PDO($config を使って);
+        
+このような感じですかね
+
+
+
+----------------------------------------------------------------
+▼model作成
+----------------------------------------------------------------
+エラーが解消されましたら、次は、モデルファイルを作成してみたいです。
+DBのやりとりを行う処理は、このモデルに集約したいです。
+app配下にmodelsというディレクトリを作成して、
+Todo.phpというファイルを作成
+そのファイルにTodoクラスを宣言し、
+getAll のようなメソッドを用意して、
+TODOリストを全て取得処理にしてみましょう
+$sql = 'SELECT * FROM todos';
+if ($prepare = $pdo->prepare($sql)) {
+    $prepare->execute();
+    $todos = $prepare->fetchAll(PDO::FETCH_ASSOC);
+}
+このあたりの処理をモデルに移行させるイメージですね
+ユーザーの取得はUser.php を作成し、
+同様にモデルクラスを宣言してみてください。
+このあたり、トライしてみてください＾＾
