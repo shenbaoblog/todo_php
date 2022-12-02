@@ -12,7 +12,7 @@ class TodoController
         $user_id = 1;
 
         $users = User::findById($user_id);
-        // $todos = Todo::getAll($user_id);
+        $todos = Todo::getAll($user_id);
 
         return [
             'users' => $users,

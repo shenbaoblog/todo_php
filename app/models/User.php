@@ -15,6 +15,7 @@ class User
                 $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
             }
 
+            $prepare = null;
             $pdo = null;
 
         } catch (PDOException $e) {
