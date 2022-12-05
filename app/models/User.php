@@ -1,10 +1,10 @@
 <?php
 
-class User
+class User extends BaseModel
 {
     static public function findById($user_id)
     {
-        $config = require_once('/var/www/html/app/config/db_connect.php');
+        $config = BaseModel::getDBConfig();
 
         try {
             $pdo = new PDO($config['dsn'], $config['username'], $config['password'], $config['driver_options']);
@@ -14,9 +14,6 @@ class User
                 $prepare->execute();
                 $users = $prepare->fetchAll(PDO::FETCH_ASSOC);
             }
-
-            $prepare = null;
-            $pdo = null;
 
         } catch (PDOException $e) {
             print('Connection failed:' . $e->getMessage());
