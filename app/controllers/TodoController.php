@@ -18,4 +18,19 @@ class TodoController
             'todos' => $todos,
         ];
     }
+
+    public function show()
+    {
+        $user_id = 1;
+        $todo_id = 2;
+
+        $users = User::findById($user_id);
+        $todo = Todo::getByID($todo_id);
+
+        return [
+            'users' => $users,
+            'todo' => $todo,
+        ];
+    }
+
 }

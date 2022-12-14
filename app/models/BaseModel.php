@@ -1,9 +1,17 @@
 <?php
 
-class BaseModel
-{
-    public function getDBConfig()
-    {
-        return require('/var/www/html/app/config/db_connect.php');;
+$config = require_once('/var/www/html/app/config/config.php');
+class BaseModel {
+    
+    // DBconfigの取得
+    public static function getDBConfig() {
+        global $config;
+        return  $config;
+    }
+
+    // pdoインスタンスの生成
+    public static function getPDO() {
+        global $config;
+        return new PDO($config['dsn'], $config['username'], $config['password'], $config['driver_options']);
     }
 }

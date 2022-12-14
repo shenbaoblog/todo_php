@@ -945,3 +945,181 @@ DBのconfigやPDOクラスの宣言はDBの操作だと思うので
 コントローラーに書く処理は短いほどいいとされています。
 indexメソッドの処理がこのようになるように、モデルの処理を修正してみましょうか。
 トライしてみてください＾＾
+
+
+アドバイスありがとうございます。
+修正してみました。ただ、
+        $users = User::findById($user_id);
+        $todos = Todo::getAll($user_id);
+のように2回、モデルを呼び出すとエラーとなります。
+Connection failed:invalid data source name
+モデル側に$pdo = null;を入れてみたのですが、うまくいきません。
+アドバイスいただけますでしょうか？
+https://github.com/shenbaoblog/todo_php （編集済み） 
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+a month ago
+投稿したメンバー: GitHub
+
+
+マイケル
+  14:44
+エラーは全文を記載いただけると調査しやすいので、次回から全文貼っていただけますと幸いです。
+Connection failedとあるので、
+おそらくDB接続でエラーがでているように思います。
+$config = require_once('/var/www/html/app/config/db_connect.php');
+この$configがうまく取得できているか
+var_dumpなどで確認してみてください。
+おそらく初回読み込み時のUserクラスの中ではうまく取得できていると思いますが
+2回目に読み込まれるTodoクラスの中では、すでに読み込まれているので
+うまく$configが取得できていないと思います。
+うまくUserクラスも、Todoクラスでも$configを取得できるようにしたいです。
+BaseModelのような親クラスを宣言し、全てのモデルクラスは
+このクラスを継承し、$configを取得するようなメソッドが必要ですかね
+ちょっと工夫がいるかなと思いますが
+参考に調査してみてください＾＾
+
+
+陽- よう
+  09:47
+ありがとうございます！今回の場合、出たエラー文が、
+Connection failed:invalid data source name
+のみでしたので、そちらを添付させていただきました！
+また、アドバイスをもとに修正してみました！ご確認お願いいたします！
+https://github.com/shenbaoblog/todo_php
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+2 months ago
+投稿したメンバー: GitHub
+09:49
+▼補足
+BaseModelクラスを、下記のようにするかで、少し悩みました。
+$pdo->prepare等もエラー検知に含めたほうが良いと思ったので、下記の形にはしませんでした。
+考え方として、あっていますでしょうか？
+class BaseModel
+{
+    public function getDBConfig()
+    {
+        $config = require('/var/www/html/app/config/db_connect.php');
+        try {
+            $pdo = new PDO($config['dsn'], $config['username'], $config['password'], $config['driver_options']);
+        } catch (PDOException $e) {
+            print('Connection failed:' . $e->getMessage());
+            die();
+        }
+        return $pdo;
+    }
+}
+（編集済み）
+
+
+マイケル
+  23:05
+すみません、大変遅くなりました。
+いい感じですね＾＾
+$config = BaseModel::getDBConfig();
+せっかく継承しているので、
+self::getDBConfig();
+のようにかけそうですかね？
+public function getDBConfig()
+{
+    return require('/var/www/html/app/config/db_connect.php');;
+}
+;; になっているようなので、;に修正しておきましょう。
+もしrequire_onceで処理を書くなら、
+今の処理だと、２回目にファイルを読み込んだ時に返り値がtrueになると思うので
+$config = require_once('./config.php');
+class BaseModel {
+    public static function get_config() {
+        global $config;
+        return  $config;
+    }
+}
+このように書く必要があるかなと思います。
+$pdo->prepare等もエラー検知に含めたほうが良いと思ったので、下記の形にはしませんでした。
+エラー検知というよりは、getDBConfigというメソッドの中では
+コンフィグ取得のみ、処理を書いた方がいいので
+PDOクラスをnewする必要はないかなと思います。
+　
+PDOクラスのインスタンスを取得するためのメソッドは用意した方が
+よりベターと思うので
+getPDOのようなメソッドを用意して、PDOクラスのインスタンスを返す処理を実装してみましょうか。
+そうすれば
+public function getAll($user_id)
+{
+    try {
+        $pdo = self::getPDO();
+        //省略
+のようにかけそうですかね？
+トライしてみてください＾＾
+index.phpですが、
+他のページも実装していくので
+views/todo/index.phpにしてみてください。
+ <!-- ユーザーリスト -->
+    <h2>ユーザーリスト</h2>
+    <?php
+    echo "id,name,password,created_at,updated_at,deleted_at<br />";
+    foreach ($sql['users'] as $user) {
+        echo "<li>{$user['id']},{$user['name']},{$user['password']},{$user['created_at']},{$user['updated_at']},{$user['updated_at']},{$user['deleted_at']}</li>";
+    }
+    ?>
+これは不要なので削除してみましょうか。
+ページのヘッダーに、ログインしているユーザー名を表示してみましょうか。
+今はuser_id=1で決めうちでいいので、
+Userクラスから取得したユーザー名を一覧ページに表示してみてください。
+ひとまず一覧ページは実装できましたので、
+次は詳細ページも作成して行きましょう。
+views/todo/show.php
+というファイルを作成して、コントローラーには、showというメソッドを宣言
+todo_idをGETパラメータにして
+それに紐つくTODOの詳細ページを表示してみたいです。
+こちらもトライしてみてください＾＾
+
+
+陽- よう
+  09:32
+質問させてください。
+どうして、以下の形だと返り値がtrueになるのでしょうか？
+<?php
+
+class BaseModel
+{
+    public function getDBConfig()
+    {
+        return require('/var/www/html/app/config/db_connect.php');;
+    }
+}
+New
+
+
+マイケル
+  13:32
+以下の形だと返り値がtrueになるのでしょうか？
+これもPHPの仕様になりますが、
+require_once を使用する場合、
+一度読み込んファイルは再読み込みをしない関数なので
+public function getDBConfig()
+{
+    return require_once('/var/www/html/app/config/db_connect.php');
+}
+この書き方だと、初回はうまく読み込みますが、
+２回目以降にgetDBConfigをコールした場合は、ファイルを読み込まず、
+trueを返すような動きになってます。
+なので、何度も読み込まないような工夫が処理に必要になります。
+requireを使用する場合は、毎回読み込む関数なので
+うまく動くかと思います。
+return require('/var/www/html/app/config/db_connect.php');
+よろしければ参考にしてください＾＾
+
+
+陽- よう
+  09:09
+丁寧にありがとうございます。
+require_onceは、2度目以降は、trueになる！
+覚えておきます！

@@ -18,14 +18,17 @@ $sql = TodoController::index();
 
 <body>
 
+    <p>ログインユーザー名</p>
+    <p><?php echo $sql['users'][0]['name'] . "a"; ?></p>
+
     <!-- ユーザーリスト -->
-    <h2>ユーザーリスト</h2>
+    <!-- <h2>ユーザーリスト</h2>
     <?php
     echo "id,name,password,created_at,updated_at,deleted_at<br />";
     foreach ($sql['users'] as $user) {
         echo "<li>{$user['id']},{$user['name']},{$user['password']},{$user['created_at']},{$user['updated_at']},{$user['updated_at']},{$user['deleted_at']}</li>";
     }
-    ?>
+    ?> -->
 
     <br />
 
