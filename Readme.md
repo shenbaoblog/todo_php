@@ -1123,3 +1123,47 @@ return require('/var/www/html/app/config/db_connect.php');
 丁寧にありがとうございます。
 require_onceは、2度目以降は、trueになる！
 覚えておきます！
+
+
+陽- よう
+  09:09
+丁寧にありがとうございます。
+require_onceは、2度目以降は、trueになる！
+覚えておきます！
+
+
+陽- よう
+  09:51
+修正しました！ご確認お願いします！
+https://github.com/shenbaoblog/todo_php
+また、
+views/todoディレクトリに移動させても、ページ表示させるには、
+.htaccess等で、リダイレクトをかけるということでしょうか？
+
+
+すみません、大変遅くなりました。
+views/todoディレクトリに移動させても、ページ表示させるには、.htaccess等で、リダイレクトをかけるということでしょうか？
+ひとまずドキュメントルートは変更しなくてOKです！
+もし変更される場合は、nginxのドキュメントルートをviews配下にしてあげれば
+上手く表示されると思いますが、
+今の状態であれば、
+localhost:8000/views/todos/index.php
+のようなURLで表示できるかなと思います。
+詳細ページも同様に実装できましたね！
+
+public function show()
+{
+    $user_id = 1;
+    $todo_id = 2;
+
+    $users = User::findById($user_id);
+    $todo = Todo::getByID($todo_id);
+
+todo_idは動的にしましょうか。
+GETパラメータにtodo_idを付与して、表示するTODOを動的にしてみましょう
+localhost:8000/views/todos/index.php?todo_id=1
+のようなURLになりそうですかね。
+また、存在しないTODOのIDならば、エラーページに遷移させてみたいです。
+views/error/404.phpのようなファイルを作成、
+もし存在しないtodo_idならこのページに遷移させるような処理にしてみましょう。
+このあたりトライしてみてください＾＾

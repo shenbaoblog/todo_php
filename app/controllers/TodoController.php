@@ -22,7 +22,12 @@ class TodoController
     public function show()
     {
         $user_id = 1;
-        $todo_id = 2;
+        if(isset($_GET['todo_id'])) { $todo_id = $_GET['todo_id']; }
+
+        if(!$todo_id) {
+            header('Location: /error/404.php');
+            exit;
+        }
 
         $users = User::findById($user_id);
         $todo = Todo::getByID($todo_id);
