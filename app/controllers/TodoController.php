@@ -7,14 +7,24 @@ include('/var/www/html/app/models/User.php');
 class TodoController
 {
 
+    // private static $current_user;
+    private $current_user;
+
+    public function __construct() {
+        $user_id = 1;
+        $this->current_user = User::findById($user_id);
+        // self::$current_user = User::findById($user_id);
+    }
+
     public function index()
     {
         $user_id = 1;
-        $users = User::findById($user_id);
+        // $user = self::$current_user;
+        $user = self::$current_user;
         $todos = Todo::getAll($user_id);
 
         return [
-            'users' => $users,
+            'user' => $user,
             'todos' => $todos,
         ];
     }
@@ -29,11 +39,11 @@ class TodoController
             exit;
         }
 
-        $users = User::findById($user_id);
+        $user = User::findById($user_id);
         $todo = Todo::getByID($todo_id);
 
         return [
-            'users' => $users,
+            'users' => $user,
             'todo' => $todo,
         ];
     }
