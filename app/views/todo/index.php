@@ -1,10 +1,10 @@
 <?php
 
 include('/var/www/html/app/controllers/TodoController.php');
-$sql = TodoController::index();
+// $sql = TodoController::index();
 
 $controller = new TodoController();
-$sql2 = $controller->index();
+$sql = $controller->index();
 
 ?>
 
@@ -23,7 +23,6 @@ $sql2 = $controller->index();
 
     <p>ログインユーザー名</p>
     <p><?php echo $sql['user']['name']; ?></p>
-    <?php var_dump($sql['user']); ?>
 
     <!-- ユーザーリスト -->
     <!-- <h2>ユーザーリスト</h2>
