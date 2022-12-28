@@ -17,7 +17,6 @@ class User extends BaseModel
             print('Connection failed:' . $e->getMessage());
             die();
         }
-
         return $user;
     }
 }

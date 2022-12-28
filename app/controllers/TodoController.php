@@ -10,7 +10,7 @@ class TodoController
     // private static $current_user;
     private $current_user;
 
-    public function __construct() {
+    function __construct() {
         $user_id = 1;
         $this->current_user = User::findById($user_id);
         // self::$current_user = User::findById($user_id);
@@ -20,7 +20,8 @@ class TodoController
     {
         $user_id = 1;
         // $user = self::$current_user;
-        $user = self::$current_user;
+        // $user = $this->current_user;
+        $user = User::findById($user_id);
         $todos = Todo::getAll($user_id);
 
         return [
