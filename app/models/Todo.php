@@ -49,5 +49,6 @@ class Todo extends BaseModel
             header('Location: /error/404.php');
             exit;
         }
+        return $todo;
     }
 }

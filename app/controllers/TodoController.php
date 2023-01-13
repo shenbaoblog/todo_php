@@ -30,9 +30,9 @@ class TodoController
 
     public function show()
     {
-        // $user_id = 1;
-        var_dump($this->current_user['id']);
-        $user_id = $this->current_user['id'];
+        $user_id = 1;
+        // var_dump($this->current_user['id']);
+        // $user_id = $this->current_user['id'];
 
         // クエリパラメータから$todo_idを取得
         if(isset($_GET['todo_id'])) {
@@ -45,11 +45,7 @@ class TodoController
 
         $user = User::findById($user_id);
         $todo = Todo::findOr404($todo_id);
-        // $todo = Todo::getByID($todo_id);
-        // if(!$todo) {
-        //     header('Location: /error/404.php');
-        //     exit;
-        // }
+
 
         var_dump($user);
         var_dump($todo);
