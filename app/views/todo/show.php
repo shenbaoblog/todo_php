@@ -19,12 +19,13 @@ $sql = TodoController::show();
 <body>
 
     <p>ログインユーザー名</p>
-    <p><?php echo $sql['users'][0]['name'] . "a"; ?></p>
+    <p><?php echo $sql['user']['name']; ?></p>
 
     <br />
 
     <!-- TODOのタイトル -->
     <h2>TODO</h2>
+    <?php var_dump($sql['todo']); ?>
 
     <?php foreach ($sql['todo'] as $todo) : ?>
 

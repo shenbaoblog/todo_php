@@ -23,7 +23,7 @@ class Todo extends BaseModel
     }
 
     // todoのidからからタスクを取得
-    public function getByID($todo_id)
+    public static function getByID($todo_id)
     {
         // $config = self::getDBConfig();
         try {
@@ -39,5 +39,15 @@ class Todo extends BaseModel
             die();
         }
         return $todos;
+    }
+
+    //  todoのidからからタスクを取得して、エラー判定
+    public function findOr404($todo_id)
+    {
+        $todo = self::getByID($todo_id);
+        if(!$todo) {
+            header('Location: /error/404.php');
+            exit;
+        }
     }
 }

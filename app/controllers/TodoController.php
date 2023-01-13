@@ -11,20 +11,16 @@ class TodoController
 
     // private static $current_user;
     private $current_user;
-    private $user_id = 1;
 
     function __construct() {
-        // $user_id = 1;
-        $user_id = $this->user_id;
         $this->current_user = ServiceAuth::get_current_user();
     }
 
     public function index()
     {
-        // $user_id = 1;
-        $user_id = $this->user_id;
         $user = $this->current_user;
-        $todos = Todo::getAll($user_id);
+        $todos = Todo::getAll($this->current_user['id']);
+        var_dump($this->current_user);
 
         return [
             'user' => $user,
@@ -35,19 +31,31 @@ class TodoController
     public function show()
     {
         // $user_id = 1;
-        $user_id = $this->user_id;
-        if(isset($_GET['todo_id'])) { $todo_id = $_GET['todo_id']; }
+        var_dump($this->current_user['id']);
+        $user_id = $this->current_user['id'];
 
+        // クエリパラメータから$todo_idを取得
+        if(isset($_GET['todo_id'])) {
+            $todo_id = $_GET['todo_id'];
+        }
         if(!$todo_id) {
-            header('Location: /error/404.php');
+            header('Location: /error/400.php');
             exit;
         }
 
         $user = User::findById($user_id);
-        $todo = Todo::getByID($todo_id);
+        $todo = Todo::findOr404($todo_id);
+        // $todo = Todo::getByID($todo_id);
+        // if(!$todo) {
+        //     header('Location: /error/404.php');
+        //     exit;
+        // }
+
+        var_dump($user);
+        var_dump($todo);
 
         return [
-            'users' => $user,
+            'user' => $user,
             'todo' => $todo,
         ];
     }
