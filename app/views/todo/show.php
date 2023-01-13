@@ -1,8 +1,10 @@
 <?php
 
 include('/var/www/html/app/controllers/TodoController.php');
-$sql = TodoController::show();
+// $sql = TodoController::show();
 
+$controller = new TodoController();
+$sql = $controller->show();
 ?>
 
 
