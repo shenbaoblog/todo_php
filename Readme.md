@@ -1167,3 +1167,42 @@ localhost:8000/views/todos/index.php?todo_id=1
 views/error/404.phpのようなファイルを作成、
 もし存在しないtodo_idならこのページに遷移させるような処理にしてみましょう。
 このあたりトライしてみてください＾＾
+
+
+いい感じですね！
+function __construct() {
+    // $user_id = 1;
+    $user_id = $this->user_id;
+$user_id を宣言されておりますが、コンストラクタ内で特に使用されていないので
+この処理は不要ですかね
+$todos = Todo::getAll($user_id);
+プロパティにuser_id を定義しているのであれば、
+わざわざ$user_id を宣言する必要はなく
+$todos = Todo::getAll($this->user_id);
+のように書いてあげればOKです
+showメソッドですが
+if(!$todo_id) {
+    header('Location: /error/404.php');
+    exit;
+}
+todo_id がない場合に404エラーページに遷移されておりますが、
+エラーコードとしては400が正しいと思うので
+400.phpというエラーページを別に用意して
+そこに遷移するようにしてみましょうか
+400はBad Rquest なので、リクエストパラメータに不備があるエラーになります。
+$todo = Todo::getByID($todo_id);
+todo_id に紐つくtodoがない場合は、404.php に遷移させたいです。
+$todo = Todo::getByID($todo_id);
+if(!$todo) {
+    header('Location: /error/404.php');
+    exit;
+}
+このような処理になりそうですが、
+この処理をモデルに書いてみましょうか
+モデルにfindOr404 というメソッドを用意して
+もし取得できない場合は、メソッド内で404にリダイレクトするような処理にしてみましょうか
+そうすれば、コントローラーは
+$todo = Todo::findOr404($todo_id);
+と書くだけでよくなりますね。
+なるべくコントローラーの記述量を減らすのがベストプラクティスです。
+こちらトライしてみてください＾＾
