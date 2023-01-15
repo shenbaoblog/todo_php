@@ -1,10 +1,10 @@
 <?php
 
 include('/var/www/html/app/controllers/TodoController.php');
-// $sql = TodoController::show();
 
 $controller = new TodoController();
-$sql = $controller->show();
+// $sql = $controller->show();
+$sql = $controller->new();
 ?>
 
 
@@ -20,7 +20,7 @@ $sql = $controller->show();
 
 <body>
 
-    <h1>タスク詳細</h1>
+    <h1>新規作成</h1>
     <p>ログインユーザー名</p>
     <p><?php echo $sql['user']['name']; ?></p>
 
@@ -28,16 +28,14 @@ $sql = $controller->show();
 
     <!-- TODOのタイトル -->
     <h2>TODO</h2>
-    <?php var_dump($sql['todo']); ?>
+    <form method="POST" action="/config/controllers/TodoController.php">
 
-    <?php foreach ($sql['todo'] as $todo) : ?>
+        <p>タイトル：<input type="text" name="title" id="title"></p>
+        <p>詳細：<textarea name="details" id="details" cols="30" rows="10"></textarea></p>
 
-        <p>作成日：<?php echo $todo['created_at']; ?></p>
-        <p>更新日：<?php echo $todo['updated_at']; ?></p>
-        <p>タイトル：<?php echo $todo['title']; ?></p>
-        <p>詳細：<?php echo $todo['details']; ?></p>
+        <button type="submit">登録</button>
 
-    <?php endforeach; ?>
+    </form>
 
 
 </body>

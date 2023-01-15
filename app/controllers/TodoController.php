@@ -18,21 +18,17 @@ class TodoController
 
     public function index()
     {
-        $user = $this->current_user;
+
         $todos = Todo::getAll($this->current_user['id']);
-        var_dump($this->current_user);
 
         return [
-            'user' => $user,
+            'user' => $this->current_user,
             'todos' => $todos,
         ];
     }
 
     public function show()
     {
-        // $user_id = 1;
-        // var_dump($this->current_user);
-        $user_id = $this->current_user['id'];
 
         // クエリパラメータから$todo_idを取得
         if(isset($_GET['todo_id'])) {
@@ -43,14 +39,25 @@ class TodoController
             exit;
         }
 
-        $user = User::findById($user_id);
         $todo = Todo::findOr404($todo_id);
 
 
         return [
-            'user' => $user,
+            'user' => $this->current_user,
             'todo' => $todo,
         ];
+    }
+
+    public function new()
+    {
+        return [
+            'user' => $this->current_user,
+        ];
+    }
+
+    public function store()
+    {
+        Todo::registration();
     }
 
 }

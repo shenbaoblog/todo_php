@@ -1206,3 +1206,74 @@ $todo = Todo::findOr404($todo_id);
 と書くだけでよくなりますね。
 なるべくコントローラーの記述量を減らすのがベストプラクティスです。
 こちらトライしてみてください＾＾
+
+
+いい感じですね！コントローラーがスッキリしてきました
+public function show()
+{
+    // $user_id = 1;
+    // var_dump($this->current_user);
+    $user_id = $this->current_user['id'];
+
+    // クエリパラメータから$todo_idを取得
+    if(isset($_GET['todo_id'])) {
+        $todo_id = $_GET['todo_id'];
+    }
+    if(!$todo_id) {
+        header('Location: /error/400.php');
+        exit;
+    }
+
+    $user = User::findById($user_id);
+    $todo = Todo::findOr404($todo_id);
+    
+// $user_id = 1;
+// var_dump($this->current_user);
+不要なコメントは削除しておきましょう
+$user = User::findById($user_id);
+この処理ですが、コンストラクターで
+function __construct() {
+    $this->current_user = ServiceAuth::get_current_user();
+}
+ログインユーザーを取得する処理を実装しているので、
+index, showメソッドそれぞれに書く必要はなさそうです。
+public function show()
+{
+    // クエリパラメータから$todo_idを取得
+    if(isset($_GET['todo_id'])) {
+        $todo_id = $_GET['todo_id'];
+    }
+    if(!$todo_id) {
+        header('Location: /error/400.php');
+        exit;
+    }
+    $todo = Todo::findOr404($todo_id);
+
+    return [
+        'user' => $this->current_user,
+        'todo' => $todo,
+    ];
+}
+こんな感じでかけそうですかね
+indexメソッドもリファクタリングお願いします。
+class ServiceAuth {
+    function get_current_user() {
+        $user_id = 1;
+        return User::findById($user_id);
+    }
+}
+get_current_user内で、もしユーザーが取得できない場合は
+ログインページに遷移するような処理を実装しておきたいです。
+views/auth/login.php
+のようなファイルを作成しておいて、
+もし$user が取得できない場合は、このログインページにリダイレクトする処理を実装しておきましょうか。
+さて、これで一覧ページと、詳細ページができましたね！
+次は新規作成ページを実装してみたいです。
+TodoControllerにnew, storeというメソッドを用意して
+viewsにはtodos配下にnew.php を用意しておきましょう。
+newメソッドはリクエストメソッドがGETの時に実行される
+storeメソッドはリクエストメソッドがPOSTの時に実行される
+ような実装にしてみたいです。
+新規作成のフォームを実装していただき、
+submitボタンを押下してTODOリストが登録できるようにしたいです。
+こちらトライしてみてください＾＾

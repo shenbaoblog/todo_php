@@ -51,4 +51,23 @@ class Todo extends BaseModel
         }
         return $todo;
     }
+
+    // タスクの新規登録
+    public function registration() {
+        $title   = $_POST['title'];
+        $details = $_POST['details'];
+
+        try {
+            $pdo = self::getPDO();
+
+            $sql = "INSERT INTO todos(title, details) VALUES(:title, :details)";
+            if ($prepare = $pdo->prepare($sql)) {
+                $params = array(':title' => $title, ':details' => $details);
+                $prepare->execute($params);
+            }
+        } catch (PDOException $e) {
+            print('Connection failed' . $e->getMessage());
+            die();
+        }
+    }
 }
