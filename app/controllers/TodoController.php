@@ -58,6 +58,9 @@ class TodoController
     public function store()
     {
         Todo::registration();
+        return [
+            'user' => $this->current_user,
+        ];
     }
 
 }

@@ -54,16 +54,31 @@ class Todo extends BaseModel
 
     // タスクの新規登録
     public function registration() {
-        $title   = $_POST['title'];
+        $user_id = $_POST['user_id'];
+        $title = $_POST['title'];
         $details = $_POST['details'];
+        $status = $_POST['status'];
 
         try {
             $pdo = self::getPDO();
 
-            $sql = "INSERT INTO todos(title, details) VALUES(:title, :details)";
+            // $sql = "SELECT * FROM todos WHERE id = $todo_id";
+
+            $sql = "INSERT INTO todos(user_id, title, details, status) VALUES(:user_id, :title, :details, :status)";
             if ($prepare = $pdo->prepare($sql)) {
-                $params = array(':title' => $title, ':details' => $details);
+                var_dump($prepare);
+                echo "<br>";
+                $params = array(
+                    ':user_id' => $user_id,
+                    ':title' => $title,
+                    ':details' => $details,
+                    ':status' => $status
+                );
+                
+                var_dump($params);
                 $prepare->execute($params);
+                echo "<br>";
+                var_dump($params);
             }
         } catch (PDOException $e) {
             print('Connection failed' . $e->getMessage());

@@ -2,7 +2,7 @@
 
 $config = require_once('/var/www/html/app/config/config.php');
 class BaseModel {
-    
+
     // DBconfigの取得
     // public static function getDBConfig() {
     //     global $config;

@@ -1277,3 +1277,35 @@ storeメソッドはリクエストメソッドがPOSTの時に実行される
 新規作成のフォームを実装していただき、
 submitボタンを押下してTODOリストが登録できるようにしたいです。
 こちらトライしてみてください＾＾
+
+陽- よう
+  09:53
+途中まで作成してみました！
+アドバイスお願いします。
+new.phpにて、登録ボタンを押したあとに、
+store();を実行してDBに登録するまでの書き方がわかりません。
+アドバイスよろしくお願いいたします。
+https://github.com/shenbaoblog/todo_php （編集済み） 
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+3 months ago
+投稿したメンバー: GitHub
+
+
+マイケル
+  21:34
+new.phpにて、登録ボタンを押したあとに、
+store();を実行してDBに登録するまでの書き方がわかりません。
+ submitボタンを押下すると、リクエストメソッドはPOSTになるので
+リクエストメソッドによって、呼び出すコントローラーのメソッドを条件分岐する必要があるのかなと思います。
+イメージとしては
+$controller = new TodoController();
+// GETなら
+$result = $controller->new();
+// POSTなら
+$result = $controller->store();
+のような感じですかね？
+参考に修正してみてください＾＾
