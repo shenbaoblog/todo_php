@@ -1226,7 +1226,7 @@ public function show()
 
     $user = User::findById($user_id);
     $todo = Todo::findOr404($todo_id);
-    
+
 // $user_id = 1;
 // var_dump($this->current_user);
 不要なコメントは削除しておきましょう
@@ -1309,3 +1309,185 @@ $result = $controller->new();
 $result = $controller->store();
 のような感じですかね？
 参考に修正してみてください＾＾
+
+
+陽- よう
+  09:54
+アドバイスありがとうございます！
+変更してみました。
+続けて質問させてください。
+https://github.com/shenbaoblog/todo_php
+現在、DBへの新規TODO登録がうまく行かない状態です。
+app/models/Todo.phpの67行目~79行目のどこかに間違いがあると考えているのですが、原因がわからないです。
+お手数おかけしますが、アドバイスのほどよろしくお願いいたします。
+var_dump($prepare);
+var_dump($params);
+をすると、
+object(PDOStatement)#2 (1) { ["queryString"]=> string(94) "INSERT INTO todos(user_id, title, details, status) VALUES(:user_id, :title, :details, :status)" }
+array(4) { [":user_id"]=> int(1) [":title"]=> string(0) "" [":details"]=> string(0) "" [":status"]=> int(0) }
+と表示されます。 （編集済み） 
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+3 months ago
+投稿したメンバー: GitHub
+
+
+マイケル
+  08:45
+すみません、大変遅くなりました。
+INSERTができないとのことですが、特にエラーは発生していないですかね？
+ try {
+    $pdo = self::getPDO();
+
+    $sql = "INSERT INTO todos(title, details) VALUES(:title, :details)";
+    if ($prepare = $pdo->prepare($sql)) {
+        $params = array(':title' => $title, ':details' => $details);
+        $prepare->execute($params);
+    }
+} catch (PDOException $e) {
+    print('Connection failed' . $e->getMessage());
+    die();
+}
+例外処理を実装されているので、
+もしDB処理に失敗している場合は、 catchの中の処理が動いていると思います。
+var_dumpなどでデバッグしてみてください。
+続いて確認するところは、保存している値の確認です
+array(4) { [":user_id"]=> int(1) [":title"]=> string(0) "" [":details"]=> string(0) "" [":status"]=> int(0) }
+titleが空文字なのが気になります。
+titleはnot nullにしていると思うので、空文字を保存しようとしてエラーになっているようにも思います、
+他にもnot nullなカラムはないかも確認してみてください。
+また、user_idは、usersテーブルの外部キーなので、
+このidに該当するレコードがusersテーブルに存在しているかも確認してみましょう。
+CREATE TABLE todos ( id INT NOT NULL, user_id INT NOT NULL, title VARCHAR(100) NOT NULL, details TEXT, status INT NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, deleted_at DATETIME NOT NULL, PRIMARY KEY (id), FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL ); 
+外部キーの制約をかけているので、もしusersテーブルにレコードがない場合は、保存されないと思います。
+まずはこのあたり確認してみてください＾＾
+
+
+陽- よう
+  09:56
+ありがとうございます。
+以下、確認したことになります。
+INSERTができないとのことですが、特にエラーは発生していないですかね？
+エラーは、発生していません。
+titleが空文字なのが気になります。
+titleはnot nullにしていると思うので、空文字を保存しようとしてエラーになっているようにも思います、
+他にもnot nullなカラムはないかも確認してみてください。
+titleに文字列を入力しても依然として、登録されません。
+object(PDOStatement)#2 (1) { ["queryString"]=> string(94) "INSERT INTO todos(user_id, title, details, status) VALUES(:user_id, :title, :details, :status)" }
+array(4) { [":user_id"]=> int(1) [":title"]=> string(9) "テスト" [":details"]=> string(6) "詳細" [":status"]=> int(0) }
+NOT NULL 成約は、下記の形です。
+idは、PRIMARY KEYにしているいので、自動連番になると認識しています。
+created_at、updated_atも自動付与の認識です。
+なので、user_id、title、statusの2つをデータとして送れば良いと考えています。
+CREATE TABLE todos (
+  id INT NOT NULL,
+  user_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  details TEXT,
+  status INT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  ON UPDATE CASCADE
+  ON DELETE CASCADE
+);
+また、user_idは、usersテーブルの外部キーなので、
+このidに該当するレコードがusersテーブルに存在しているかも確認してみましょう。
+userテーブルにid:1は、存在しています。
+https://gyazo.com/aa3df924e9c5bee8ff965774f7d99976
+このため、
+user_id、title、statusの3つをDBに送れていれば登録できると認識しています。
+自分なりに見てみてるのですが、やはりわからないです。。。
+    // タスクの新規登録
+    public function registration() {
+        $user_id = intval($_POST['user_id']);
+        $title = $_POST['title'];
+        $details = $_POST['details'];
+        $status = intval($_POST['status']);
+
+        try {
+            $pdo = self::getPDO();
+
+            // $sql = "SELECT * FROM todos WHERE id = $todo_id";
+
+            $sql = "INSERT INTO todos(user_id, title, details, status) VALUES(:user_id, :title, :details, :status)";
+            if ($prepare = $pdo->prepare($sql)) {
+                var_dump($prepare);
+                echo "<br>";
+                $params = array(
+                    ':user_id' => $user_id,
+                    ':title' => $title,
+                    ':details' => $details,
+                    ':status' => $status
+                );
+
+                var_dump($params);
+                $prepare->execute($params);
+            }
+        } catch (PDOException $e) {
+            print('Connection failed' . $e->getMessage());
+            die();
+        }
+    }
+（編集済み）
+New
+
+
+マイケル
+  21:38
+すみません、大変遅くなりました。
+動作確認して見ました。
+pushされていないかもしれませんが
+そうすると、新規作成ページでsubmitボタンを押した後の遷移先は、
+http://localhost:8000/config/controllers/TodoController.php
+のようです。
+ソースをみて見ますと、
+<form method="POST" action="/config/controllers/TodoController.php">
+となっていたので、
+ここは同じviewファイルに遷移する必要があると思います。
+で、
+views/todo/new.php の冒頭の処理を修正する必要がある思います。
+イメージとしては、
+include('/var/www/html/app/controllers/TodoController.php');
+
+$controller = new TodoController();
+// もしリクエストメソッドがGETなら
+$sql = $controller->new();
+// もしリクエストメソッドがPOSTなら
+$sql = $controller->store();
+な感じになりそうですかね
+さて、保存できない件ですが、
+PDOStatementクラスから実行したクエリを取得することができるので確認して見ましょう
+$result = $prepare->execute($params);
+var_dump($result);
+var_dump($prepare->debugDumpParams());
+こんな感じでクエリを取得できると思うので、
+取得したクエリを実行してみます
+mysql> INSERT INTO todos(title, details, user_id, created_at, updated_at, status) VALUES('asdfas', 'asdfas', '1' , '2022/12/1 00:00:00', '2022/12/1 00:00:00', '0');
+ERROR 1364 (HY000): Field 'id' doesn't have a default value
+そうすると、idカラムにデフォルトバリューがないとでます
+テーブル定義を確認してみると、
+mysql> desc todos;
++------------+--------------+------+-----+-------------------+-----------------------------+
+| Field      | Type         | Null | Key | Default           | Extra                       |
++------------+--------------+------+-----+-------------------+-----------------------------+
+| id         | int(11)      | NO   | PRI | NULL              |                             |
+| user_id    | int(11)      | NO   | MUL | NULL              |                             |
+| title      | varchar(100) | NO   |     | NULL              |                             |
+| details    | text         | YES  |     | NULL              |                             |
+| status     | int(11)      | NO   |     | NULL              |                             |
+| created_at | datetime     | NO   |     | CURRENT_TIMESTAMP |                             |
+| updated_at | datetime     | NO   |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
+| deleted_at | datetime     | YES  |     | NULL              |                             |
++------------+--------------+------+-----+-------------------+-----------------------------+
+8 rows in set (0.00 sec)
+
+mysql>
+idカラムがautoincrement が設定されていないため、
+自動でIDが付与されず、保存できないのかなと思います。
+確認してみてください＾＾
