@@ -76,9 +76,13 @@ class Todo extends BaseModel
                 );
                 
                 var_dump($params);
-                $prepare->execute($params);
+                $result = $prepare->execute($params);
                 echo "<br>";
-                var_dump($params);
+                echo "<br>";
+                var_dump($result);
+                echo "<br>";
+                echo "<br>";
+                var_dump($prepare->debugDumpParams());
             }
         } catch (PDOException $e) {
             print('Connection failed' . $e->getMessage());

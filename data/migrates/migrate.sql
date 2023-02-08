@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 
 CREATE TABLE todos (
-  id INT NOT NULL,
+  id INT NOT NULL AUTO_INCREMENT,
   user_id INT NOT NULL,
   title VARCHAR(100) NOT NULL,
   details TEXT,
