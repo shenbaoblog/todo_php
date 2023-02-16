@@ -53,11 +53,11 @@ class Todo extends BaseModel
     }
 
     // タスクの新規登録
-    public function registration() {
-        $user_id = $_POST['user_id'];
-        $title = $_POST['title'];
-        $details = $_POST['details'];
-        $status = $_POST['status'];
+    public function registration($valid_data) {
+        $user_id = $valid_data['user_id'];
+        $title = $valid_data['title'];
+        $details = $valid_data['details'];
+        $status = $valid_data['status'];
 
         try {
             $pdo = self::getPDO();
@@ -74,7 +74,7 @@ class Todo extends BaseModel
                     ':details' => $details,
                     ':status' => $status
                 );
-                
+
                 var_dump($params);
                 $result = $prepare->execute($params);
                 echo "<br>";

@@ -3,6 +3,7 @@
 include('/var/www/html/app/models/BaseModel.php');
 include('/var/www/html/app/models/Todo.php');
 include('/var/www/html/app/models/User.php');
+include('/var/www/html/app/validations/TodoValidation.php');
 
 include('/var/www/html/app/services/auth.php');
 
@@ -55,12 +56,42 @@ class TodoController
         ];
     }
 
-    public function store()
-    {
-        Todo::registration();
+    // public function store()
+    // {
+    //     Todo::registration();
+    //     return [
+    //         'user' => $this->current_user,
+    //     ];
+    // }
+
+    // タスク新規登録（バリデーション付き）
+    public function store () {
+        $user_id = $_POST['user_id'];
+        $title = $_POST['title'];
+        $details = $_POST['details'];
+        $status = $_POST['status'];
+        $error = [];
+
+        $todo_data =[
+            'user_id' => $user_id,
+            'title' => $title,
+            'details' => $details,
+            'status' => $status,
+        ];
+
+        $validation = new TodoValidation($todo_data);
+        //もしバリデーションがNGなら
+        if(!$validation->validation()) {
+            //新規作成ページに遷移　エラーメッセージを表示させたい
+            $error = $validation->getErrorMsg();
+        }
+
+        $valide_data = $validation->getValidData();
+        Todo::registration($valide_data);
+
         return [
             'user' => $this->current_user,
+            'errors' => $error,
         ];
     }
-
 }

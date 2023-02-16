@@ -30,17 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     <h1>新規作成</h1>
     <p>ログインユーザー名</p>
     <p><?php echo $sql['user']['name']; ?></p>
-
+    
     <br />
-
+    
     <!-- TODOのタイトル -->
     <h2>TODO</h2>
+
+    <!-- エラー表示 -->
+    <?php if(!empty($sql['errors'])): ?>
+        <?php foreach ($sql['errors'] as $error): ?>
+            <p><?php echo $error; ?></p>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
     <form method="POST" action="/views/todo/new.php">
 
         <!-- 非表示でuser_idを送る -->
         <input type="hidden" name="user_id" id="user_id" value="<?php echo $sql['user']['id']; ?>">
 
-        <p>タイトル：<input type="text" name="title" id="title"></p>
+        <p>【必須】タイトル：<input type="text" name="title" id="title"></p>
         <p>詳細：<textarea name="details" id="details" cols="30" rows="10"></textarea></p>
         <p>ステータス：
             <select name="status" id="status">

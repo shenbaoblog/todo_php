@@ -1491,3 +1491,44 @@ mysql>
 idカラムがautoincrement が設定されていないため、
 自動でIDが付与されず、保存できないのかなと思います。
 確認してみてください＾＾
+
+
+
+
+----------------------------------------------------------------
+▼バリデーション処理の実装
+----------------------------------------------------------------
+解決されましたね！OKです！
+新規作成ができるようになりましたので、
+次はバリデーション処理を実装してみましょう。
+app/validationsディレクトリを作成し、
+TodoValidation.php を作成
+TodoValidationクラスを宣言して、
+このクラスを使用してPOSTパラメータに対してバリデーションチェックを実装してみましょう。
+public function registration() {
+    $user_id = $_POST['user_id'];
+    $title = $_POST['title'];
+    $details = $_POST['details'];
+    $status = $_POST['status'];
+現状、モデルのメソッド内でPOST値を取得しておりますが、
+POST値はコントローラー内で取得するようにいたしましょう。
+storeメソッドのイメージとしては
+public function store() {
+    $user_id = $_POST['user_id'];
+    $title = $_POST['title'];
+    $details = $_POST['details'];
+    $status = $_POST['status'];
+
+    $validation = TodoValidation(//POST値を配列で渡す);
+    //もしバリデーションがNGなら
+        //新規作成ページに遷移　エラーメッセージを表示させたい
+
+    $valide_data = $validation->getValidData();
+    Todo::registration($valide_data);
+
+}
+のような感じですかね。
+保存する値は、バリデーションクラスから取得し、モデルのメソッドの引数で渡しましょう。
+値は同じですが、このような処理にすることで保存する値が正常値であることを
+担保することができます。
+このあたり、参考に修正してみてください＾＾
