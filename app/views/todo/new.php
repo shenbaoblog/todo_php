@@ -4,13 +4,8 @@ include('/var/www/html/app/controllers/TodoController.php');
 
 $controller = new TodoController();
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-	// GET送信されたリクエストパラメータです
-    $sql = $controller->new();
-} elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
-	// POST送信されたリクエストパラメータです
-    $sql = $controller->store();
-}
+$sql = $controller->new();
+
 
 ?>
 
