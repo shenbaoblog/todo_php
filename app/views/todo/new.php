@@ -25,18 +25,19 @@ $sql = $controller->new();
     <h1>新規作成</h1>
     <p>ログインユーザー名</p>
     <p><?php echo $sql['user']['name']; ?></p>
-    
+
     <br />
-    
+
     <!-- TODOのタイトル -->
     <h2>TODO</h2>
 
     <!-- エラー表示 -->
-    <?php if(!empty($sql['errors'])): ?>
-        <?php foreach ($sql['errors'] as $error): ?>
+    <?php if(!empty($_SESSION["error"])): ?>
+        <?php foreach ($_SESSION["error"] as $error): ?>
             <p><?php echo $error; ?></p>
         <?php endforeach; ?>
     <?php endif; ?>
+
 
     <form method="POST" action="/views/todo/new.php">
 

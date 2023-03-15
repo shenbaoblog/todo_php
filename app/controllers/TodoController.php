@@ -58,6 +58,8 @@ class TodoController
                 'user' => $this->current_user,
             ];
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
+            session_start();
+
             // POST送信されたリクエストパラメータです
             $user_id = $_POST['user_id'];
             $title = $_POST['title'];
@@ -77,7 +79,10 @@ class TodoController
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
                 $errors = $validation->getErrorMsg();
+                $_SESSION["error"] = $errors;
 
+                // セッション削除
+                // unset($_SESSION["error"]);
                 return [
                     'user' => $this->current_user,
                     'errors' => $errors,
