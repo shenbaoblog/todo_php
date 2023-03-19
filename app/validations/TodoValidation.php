@@ -6,7 +6,7 @@ class TodoValidation {
     protected $title;
     protected $details;
     protected $status;
-    protected $error = [];
+    protected $message = [];
 
     function __construct($todo_data) {
         $this->user_id = $todo_data['user_id'];
@@ -17,7 +17,7 @@ class TodoValidation {
 
     public function validation() {
         if($this->title === "") {
-            $this->error[] = "※タイトルを入力してください。";
+            $this->message[] = "※タイトルを入力してください。";
             return false;
         } else {
             return true;
@@ -25,7 +25,7 @@ class TodoValidation {
     }
 
     public function getErrorMsg() {
-        return $this->error;
+        return $this->message;
     }
 
     public function getValidData() {

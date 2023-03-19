@@ -32,8 +32,8 @@ $sql = $controller->new();
     <h2>TODO</h2>
 
     <!-- エラー表示 -->
-    <?php if(!empty($_SESSION["error"])): ?>
-        <?php foreach ($_SESSION["error"] as $error): ?>
+    <?php if(!empty($_SESSION["flash_messages"])): ?>
+        <?php foreach ($_SESSION["flash_messages"] as $error): ?>
             <p><?php echo $error; ?></p>
         <?php endforeach; ?>
     <?php endif; ?>

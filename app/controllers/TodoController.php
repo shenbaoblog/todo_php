@@ -6,6 +6,7 @@ include('/var/www/html/app/models/User.php');
 include('/var/www/html/app/validations/TodoValidation.php');
 
 include('/var/www/html/app/services/auth.php');
+include('/var/www/html/app/services/session.php');
 
 class TodoController
 {
@@ -52,20 +53,33 @@ class TodoController
 
     // タスク新規登録（バリデーション付き）
     public function new () {
+        session_start();
+
+        var_dump($_SERVER['REQUEST_METHOD']);
+
+        if (is_array($_SESSION["flash_messages"]) && !empty($_SESSION["flash_messages"])) {
+            $_SERVER['REQUEST_METHOD'] == 'GET';
+            header('Location: http://localhost:8000/views/todo/new.php');
+        }
+        var_dump($_SERVER['REQUEST_METHOD']);
+
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            // セッションからエラーメッセージを取得
+
+            // セッション削除
+            unset($_SESSION["flash_messages"]);
+
             // GET送信されたリクエストパラメータです
             return [
                 'user' => $this->current_user,
             ];
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
-            session_start();
 
             // POST送信されたリクエストパラメータです
             $user_id = $_POST['user_id'];
             $title = $_POST['title'];
             $details = $_POST['details'];
             $status = $_POST['status'];
-            $errors = [];
 
             $todo_data =[
                 'user_id' => $user_id,
@@ -78,14 +92,10 @@ class TodoController
             //もしバリデーションがNGなら
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
-                $errors = $validation->getErrorMsg();
-                $_SESSION["error"] = $errors;
+                $_SESSION["flash_messages"] = $validation->getErrorMsg();
 
-                // セッション削除
-                // unset($_SESSION["error"]);
                 return [
                     'user' => $this->current_user,
-                    'errors' => $errors,
                 ];
             }
 
@@ -94,7 +104,6 @@ class TodoController
 
             return [
                 'user' => $this->current_user,
-                'errors' => $errors,
             ];
         }
 
