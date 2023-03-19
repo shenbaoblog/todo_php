@@ -57,8 +57,8 @@ class TodoController
 
         var_dump($_SERVER['REQUEST_METHOD']);
 
+        // フラッシュメッセージが存在する場合
         if (is_array($_SESSION["flash_messages"]) && !empty($_SESSION["flash_messages"])) {
-            $_SERVER['REQUEST_METHOD'] == 'GET';
             header('Location: http://localhost:8000/views/todo/new.php');
         }
         var_dump($_SERVER['REQUEST_METHOD']);
