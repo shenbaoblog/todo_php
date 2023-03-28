@@ -58,20 +58,25 @@ class TodoController
         var_dump($_SERVER['REQUEST_METHOD']);
 
         // フラッシュメッセージが存在する場合
-        if (is_array($_SESSION["flash_messages"]) && !empty($_SESSION["flash_messages"])) {
+        if (is_array($_SESSION["errors"]) && !empty($_SESSION["errors"])) {
             header('Location: http://localhost:8000/views/todo/new.php');
         }
         var_dump($_SERVER['REQUEST_METHOD']);
 
+        $errors = [];
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             // セッションからエラーメッセージを取得
+            if($_SESSION['errors']) {
+                $errors = $_SESSION['errors'];
+            }
 
             // セッション削除
-            unset($_SESSION["flash_messages"]);
+            unset($_SESSION["errors"]);
 
             // GET送信されたリクエストパラメータです
             return [
                 'user' => $this->current_user,
+                'errors' => $errors,
             ];
         } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -92,10 +97,12 @@ class TodoController
             //もしバリデーションがNGなら
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
-                $_SESSION["flash_messages"] = $validation->getErrorMsg();
+                $_SESSION["errors"] = $validation->getErrorMsg();
+                $errors = $_SESSION["errors"];
 
                 return [
                     'user' => $this->current_user,
+                    'errors' => $errors,
                 ];
             }
 

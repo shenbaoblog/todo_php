@@ -32,10 +32,12 @@ $sql = $controller->new();
     <h2>TODO</h2>
 
     <!-- エラー表示 -->
-    <?php if(!empty($_SESSION["flash_messages"])): ?>
-        <?php foreach ($_SESSION["flash_messages"] as $error): ?>
-            <p><?php echo $error; ?></p>
-        <?php endforeach; ?>
+    <?php if(!empty($sql['errors'])): ?>
+        <ul>
+            <?php foreach ($sql['errors'] as $error): ?>
+                <li style="color: red;"><?php echo $error; ?></li>
+            <?php endforeach; ?>
+        </ul>
     <?php endif; ?>
 
 
