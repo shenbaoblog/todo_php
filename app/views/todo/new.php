@@ -43,6 +43,7 @@ $sql = $controller->new();
 
     <form method="POST" action="/views/todo/new.php">
 
+        <input type="hidden" name="token" value=<?php echo $token; ?> />
         <!-- 非表示でuser_idを送る -->
         <input type="hidden" name="user_id" id="user_id" value="<?php echo $sql['user']['id']; ?>">
 

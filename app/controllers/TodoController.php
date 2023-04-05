@@ -51,17 +51,22 @@ class TodoController
     }
 
 
+    public function flash($type, $message){
+        global $flash;
+        $_SESSION['flash'][$type] = $message;
+        $flash[$type] = $message;
+    }
+
     // タスク新規登録（バリデーション付き）
     public function new () {
         session_start();
 
-        var_dump($_SERVER['REQUEST_METHOD']);
-
         // フラッシュメッセージが存在する場合
         if (is_array($_SESSION["errors"]) && !empty($_SESSION["errors"])) {
-            header('Location: http://localhost:8000/views/todo/new.php');
+            unset($_SESSION["errors"]);
+            header('Location: /views/todo/new.php');
+            exit;
         }
-        var_dump($_SERVER['REQUEST_METHOD']);
 
         $errors = [];
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -69,9 +74,6 @@ class TodoController
             if($_SESSION['errors']) {
                 $errors = $_SESSION['errors'];
             }
-
-            // セッション削除
-            unset($_SESSION["errors"]);
 
             // GET送信されたリクエストパラメータです
             return [

@@ -1616,3 +1616,120 @@ GETリロードする方法。リロードした際もPOSTしてしまってい�
 リクエストごとの条件分岐は問題なさそうに見えますので、
 var_dumpで、リクエストメソッドがGETとして取得できているか確認してみてください。
 このあたり確認してみてください＾＾
+
+
+
+
+陽- よう
+  15:04
+アドバイスありがとうございます。
+リロードした際にリクエストメソッドをGETメソッドに変更する部分がうまく行かないのですが、
+アドバイスお願いできますでしょうか？
+https://github.com/shenbaoblog/todo_php （編集済み） 
+
+shenbaoblog/todo_php
+Language
+PHP
+Last updated
+5 months ago
+投稿したメンバー: GitHub
+
+
+マイケル
+  23:02
+すみません、大変遅くなりました。
+// フラッシュメッセージが存在する場合
+if (is_array($_SESSION["flash_messages"]) && !empty($_SESSION["flash_messages"])) {
+    header('Location: http://localhost:8000/views/todo/new.php');
+}
+var_dump($_SERVER['REQUEST_METHOD']);
+このリダイレクト処理は必要でしょうか？
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    // セッションからエラーメッセージを取得
+
+    // セッション削除
+    unset($_SESSION["flash_messages"]);
+
+    // GET送信されたリクエストパラメータです
+    return [
+        'user' => $this->current_user,
+    ];
+} 
+ここの処理ですが、イメージとしては
+$errors = array();
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    // もしエラーメッセージがあれば
+        //セッションからエラーメッセージを取得
+        $errors = $_SESSION["flash_messages"]
+
+    // セッション削除
+    unset($_SESSION["flash_messages"]);
+
+    return [
+        'user' => $this->current_user,
+        'errors' => $errors,
+    ];
+}
+のような感じになるのかなと思います。
+view側ではエラーメッセージを配列で取得して
+ループしてエラーメッセージを表示すればいいですかね
+ <!-- エラー表示 -->
+<?php if(!empty($_SESSION["flash_messages"])): ?>
+    <?php foreach ($_SESSION["flash_messages"] as $error): ?>
+        <p><?php echo $error; ?></p>
+    <?php endforeach; ?>
+<?php endif; ?>
+ここはセッションではなく、コントローラーから取得するエラーメッセージ用の変数をループしましょうか。
+pタグで出力よりは、liタグでエラーメッセージをリスト表示する方が自然と思います。
+エラーメッセージを赤文字にするようなスタイルをCSSで実装するとわかりやすいかなと思います。
+ちなみにセッションキーですが、　flash_messagesだとエラー系のメッセージに限らず
+正常系のメッセージも保存するようなニュアンスのように思うので
+errorsのようなエラー系のメッセージを意味するキーの方がいいかなと思います。
+せっかくなので
+もし保存に失敗してnewにリダイレクトした際は
+入力した内容をそのまま入力欄に保持した状態にしたいです。
+入力した内容はGETパラメータとして付与するか
+こちらもセッションに保持でもOKです。
+エラーメッセージが表示できるようになりましたら、こちらもトライしてみてください。
+このあたり参考に修正してみてください＾＾
+
+
+陽- よう
+  09:30
+アドバイスありがとうございます。
+ずっとできないでいる部分が、
+「登録」ボタンクリック→ブラウザ更新
+をした際に、GETメソッドにすることです。
+ 現状だと、
+「登録」ボタンクリック（POST）→ブラウザ更新（POST）
+の状態になってしまい、フラッシュメッセージになりません。
+※フォームデータも再送信されてしまうようです。
+こちらのリダイレクトをかけている理由もブラウザ更新した際に、
+GETメソッドに変更する方法がないかと思案したものになります。
+https://havelog.aho.mu/develop/others/e172-http-request-trans.html
+アドバイスいただけないでしょうか？
+// フラッシュメッセージが存在する場合
+if (is_array($_SESSION["flash_messages"]) && !empty($_SESSION["flash_messages"])) {
+    header('Location: http://localhost:8000/views/todo/new.php');
+}
+var_dump($_SERVER['REQUEST_METHOD']);
+（編集済み）
+
+
+陽- よう
+  09:36
+あ、こちら試してみます。
+https://office-obata.com/report/memorandum/post-3550/
+
+ホームページ制作　オフィスオバタホームページ制作　オフィスオバタ
+PHPブラウザ更新（F5）で二重送信・重複送信される現象を防止する | ホームページ制作　オフィスオバタ
+ブラウザには「更新ボタン」「F5ボタン」で画面を更新する機能があります。これはこれで大事な機能なのですが、フォームの送信ボタンを押した後に、更新すると、今ほど送信した内容が、未入...
+2020年1月7日
+
+
+陽- よう
+  09:40
+質問させてください。
+やはり、フラッシュメッセージの実装ができない状態でいます。
+ブラウザ更新時にエラーメッセージが表示されてしまっています。
+フラッシュメッセージの実装は、上記リンクを実装する理解であってますでしょうか？ （編集済み） 
