@@ -61,18 +61,12 @@ class TodoController
     public function new () {
         session_start();
 
-        // フラッシュメッセージが存在する場合
-        if (is_array($_SESSION["errors"]) && !empty($_SESSION["errors"])) {
-            unset($_SESSION["errors"]);
-            header('Location: /views/todo/new.php');
-            exit;
-        }
-
         $errors = [];
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             // セッションからエラーメッセージを取得
             if($_SESSION['errors']) {
                 $errors = $_SESSION['errors'];
+                unset($_SESSION["errors"]);
             }
 
             // GET送信されたリクエストパラメータです
@@ -100,12 +94,8 @@ class TodoController
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
                 $_SESSION["errors"] = $validation->getErrorMsg();
-                $errors = $_SESSION["errors"];
-
-                return [
-                    'user' => $this->current_user,
-                    'errors' => $errors,
-                ];
+                header('Location: http://localhost:8000/views/todo/new.php');
+                exit();
             }
 
             $valide_data = $validation->getValidData();
@@ -115,6 +105,5 @@ class TodoController
                 'user' => $this->current_user,
             ];
         }
-
     }
 }
