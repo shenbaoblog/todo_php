@@ -57,7 +57,7 @@ class TodoController
         $errors = [];
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             // セッションからエラーメッセージを取得
-            $errors = Session::getFlash();
+            $errors = Session::getErrors();
 
             // GET送信されたリクエストパラメータです
             return [

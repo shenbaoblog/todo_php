@@ -12,7 +12,7 @@
 
 class Session
 {
-    public static function getFlash()
+    public static function getErrors()
     {
         // セッションからエラーメッセージを取得
         if($_SESSION['errors']) {
