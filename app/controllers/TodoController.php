@@ -15,12 +15,11 @@ class TodoController
     private $current_user;
 
     function __construct() {
-        $this->current_user = ServiceAuth::get_current_user();
+        $this->current_user = ServiceAuth::getCurrentUser();
     }
 
     public function index()
     {
-
         $todos = Todo::getAll($this->current_user['id']);
 
         return [
@@ -51,12 +50,6 @@ class TodoController
     }
 
 
-    public function flash($type, $message){
-        global $flash;
-        $_SESSION['flash'][$type] = $message;
-        $flash[$type] = $message;
-    }
-
     // タスク新規登録（バリデーション付き）
     public function new () {
         session_start();
@@ -64,10 +57,7 @@ class TodoController
         $errors = [];
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             // セッションからエラーメッセージを取得
-            if($_SESSION['errors']) {
-                $errors = $_SESSION['errors'];
-                unset($_SESSION["errors"]);
-            }
+            $errors = Session::getFlash();
 
             // GET送信されたリクエストパラメータです
             return [
@@ -93,7 +83,7 @@ class TodoController
             //もしバリデーションがNGなら
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
-                $_SESSION["errors"] = $validation->getErrorMsg();
+                $_SESSION['errors'] = $validation->getErrorMsg();
                 header('Location: http://localhost:8000/views/todo/new.php');
                 exit();
             }

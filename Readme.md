@@ -1233,7 +1233,7 @@ public function show()
 $user = User::findById($user_id);
 この処理ですが、コンストラクターで
 function __construct() {
-    $this->current_user = ServiceAuth::get_current_user();
+    $this->current_user = ServiceAuth::getCurrentUser();
 }
 ログインユーザーを取得する処理を実装しているので、
 index, showメソッドそれぞれに書く必要はなさそうです。
@@ -1257,12 +1257,12 @@ public function show()
 こんな感じでかけそうですかね
 indexメソッドもリファクタリングお願いします。
 class ServiceAuth {
-    function get_current_user() {
+    function getCurrentUser() {
         $user_id = 1;
         return User::findById($user_id);
     }
 }
-get_current_user内で、もしユーザーが取得できない場合は
+getCurrentUser内で、もしユーザーが取得できない場合は
 ログインページに遷移するような処理を実装しておきたいです。
 views/auth/login.php
 のようなファイルを作成しておいて、
@@ -1767,13 +1767,13 @@ Last updated
 POSTでアクセスされても、コントローラーのnewメソッドがコールされますね
 下記処理は不要と思います
  // フラッシュメッセージが存在する場合
-if (is_array($_SESSION["errors"]) && !empty($_SESSION["errors"])) {
+if (is_array($_SESSION['errors']) && !empty($_SESSION['errors'])) {
     header('Location: http://localhost:8000/views/todo/new.php');
 }
 headerのリダイレクト処理は、POSTの処理の中に書いてあげる必要がありそうですかね
 if(!$validation->validation()) {
     //新規作成ページに遷移　エラーメッセージを表示させたい
-    $_SESSION["errors"] = $validation->getErrorMsg();
+    $_SESSION['errors'] = $validation->getErrorMsg();
     header('Location: http://localhost:8000/views/todo/new.php');
     exit()
 ポイントはheaderの後ろにexitを書いてあげる必要があります。
@@ -1831,9 +1831,9 @@ $validation = new TodoValidation($todo_data);
             //もしバリデーションがNGなら
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
-                $_SESSION["errors"] = $validation->getErrorMsg();
-                $errors = $_SESSION["errors"];
-                $_SESSION["errors"] = $errors;
+                $_SESSION['errors'] = $validation->getErrorMsg();
+                $errors = $_SESSION['errors'];
+                $_SESSION['errors'] = $errors;
                 header('Location: http://localhost:8000/views/todo/new.php');
                 exit();
 

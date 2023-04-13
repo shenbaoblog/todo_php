@@ -8,11 +8,21 @@
  * @return void
  * @example flash('error', 'エラーです');
  */
-function flash($type, $message)
-{
-    global $flash;
-    $_SESSION['flash'][$type] = $message;
-    $flash[$type] = $message;
 
-    return $flash;
+
+class Session
+{
+    public static function getFlash()
+    {
+        // セッションからエラーメッセージを取得
+        if($_SESSION['errors']) {
+            $errors = $_SESSION['errors'];
+            unset($_SESSION['errors']);
+        }
+        return $errors;
+    }
+
+    public function clearFlash() {
+        
+    }
 }
