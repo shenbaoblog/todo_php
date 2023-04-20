@@ -43,16 +43,15 @@ $sql = $controller->new();
 
     <form method="POST" action="/views/todo/new.php">
 
-        <input type="hidden" name="token" value=<?php echo $token; ?> />
         <!-- 非表示でuser_idを送る -->
         <input type="hidden" name="user_id" id="user_id" value="<?php echo $sql['user']['id']; ?>">
 
-        <p>【必須】タイトル：<input type="text" name="title" id="title"></p>
-        <p>詳細：<textarea name="details" id="details" cols="30" rows="10"></textarea></p>
+        <p>【必須】タイトル：<input type="text" name="title" id="title"><?php echo $sql['old']['title']; ?></p>
+        <p>詳細：<textarea name="details" id="details" cols="30" rows="10"><?php echo $sql['old']['details']; ?></textarea></p>
         <p>ステータス：
             <select name="status" id="status">
-                <option value="0">未完了</option>
-                <option value="1">完了</option>
+                <option value="0" <?php echo $sql['old']['status'] == 0 ? 'selected' : ''; ?>>未完了</option>
+                <option value="1" <?php echo $sql['old']['status'] == 1 ? 'selected' : ''; ?>>完了</option>
             </select>
         </p>
 

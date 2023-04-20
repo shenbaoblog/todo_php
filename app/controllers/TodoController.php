@@ -59,12 +59,23 @@ class TodoController
             // セッションからエラーメッセージを取得
             $errors = Session::getErrors();
 
+            $old = [];
+            foreach ($_SESSION['input'] as $key => $value) {
+                $old[$key] = $value;
+                echo $key;
+                echo '<br />';
+                echo $old[$key];
+                echo '<br />';
+                echo '<br />';
+            }
+
             // GET送信されたリクエストパラメータです
             return [
                 'user' => $this->current_user,
                 'errors' => $errors,
+                'old' => $old,
             ];
-        } elseif($_SERVER['REQUEST_METHOD'] == 'POST') {
+        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // POST送信されたリクエストパラメータです
             $user_id = $_POST['user_id'];
@@ -84,6 +95,9 @@ class TodoController
             if(!$validation->validation()) {
                 //新規作成ページに遷移　エラーメッセージを表示させたい
                 $_SESSION['errors'] = $validation->getErrorMsg();
+                $_SESSION['input']['title'] = $_POST['title'];
+                $_SESSION['input']['details'] = $_POST['details'];
+                $_SESSION['input']['status'] = $_POST['status'];
                 header('Location: http://localhost:8000/views/todo/new.php');
                 exit();
             }
